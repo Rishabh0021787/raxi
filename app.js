@@ -517,12 +517,15 @@ async function handleRegister(e) {
   setTimeout(() => {
     if (typeof switchMainTab === 'function') {
       switchMainTab('home');
-      if (typeof checkAndShowWelcomeBonusModal === 'function') {
-        checkAndShowWelcomeBonusModal();
-      }
     } else {
       window.location.href = 'index.html#home';
     }
+    // Show the congratulations bonus popup after a short delay so the home tab is fully visible
+    setTimeout(() => {
+      if (typeof checkAndShowWelcomeBonusModal === 'function') {
+        checkAndShowWelcomeBonusModal();
+      }
+    }, 700);
   }, 400);
 }
 

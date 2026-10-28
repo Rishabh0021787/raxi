@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -4817,34 +4817,47 @@
     window.claimWelcomeBonusAction = async function() {
       const modal = document.getElementById('welcomeBonusModal');
       const display = document.getElementById('welcomeBonusAmountDisplay');
-      const bonusAmt = parseFloat(display ? display.textContent : 0) || 50.00;
+      const bonusAmt = parseFloat(display ? display.textContent : 0) || 88.00;
       const uid = (typeof CURRENT_USER_UID !== 'undefined' ? CURRENT_USER_UID : getActiveUid()) || '951603';
+
+      // Immediately hide modal so user can access the app
+      if (modal) modal.style.display = 'none';
 
       try {
         // Confirm claim with server
-        await fetch('/api/user/claim-welcome-bonus', {
+        const res = await fetch('/api/user/claim-welcome-bonus', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ uid, bonusAmount: bonusAmt })
-        }).catch(() => {});
+        });
+        const data = await res.json().catch(() => ({}));
 
-        // Mark claimed permanently for this user
+        // Mark claimed permanently for this user — will never show again
         localStorage.setItem('raxi_bonus_claimed_' + uid, 'true');
         localStorage.removeItem('raxi_show_welcome_bonus_amount');
 
-        // Refresh balance display
-        currentUserBalance = Math.max(currentUserBalance, bonusAmt);
-        if (window.updateAllBalanceDisplays) {
-          window.updateAllBalanceDisplays(currentUserBalance);
-        }
+        // Update balance in localStorage so wallet shows correct amount
+        try {
+          const stored = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
+          if (stored) {
+            const u = JSON.parse(stored);
+            u.balance = (data && data.data && data.data.balance) ? data.data.balance : Math.max(u.balance || 0, bonusAmt);
+            localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(u));
+          }
+        } catch(_) {}
 
-        if (modal) modal.style.display = 'none';
+        // Refresh balance display
+        if (window.updateAllBalanceDisplays) {
+          window.updateAllBalanceDisplays(bonusAmt);
+        }
+        if (typeof refreshUserBalance === 'function') refreshUserBalance(true);
 
         showToast(`🎉 Congratulations! ₹${bonusAmt.toFixed(2)} Welcome Bonus added to your wallet!`, 'success');
-        refreshUserBalance(true);
       } catch (err) {
-        if (modal) modal.style.display = 'none';
-        showToast('Bonus claimed successfully!', 'success');
+        // Even if server call fails, mark as claimed and show success
+        localStorage.setItem('raxi_bonus_claimed_' + uid, 'true');
+        localStorage.removeItem('raxi_show_welcome_bonus_amount');
+        showToast('🎉 Bonus claimed! ₹' + bonusAmt.toFixed(2) + ' added to wallet!', 'success');
       }
     };
 
@@ -4928,6 +4941,13 @@
   <!-- ================================================================== -->
   <div id="welcomeBonusModal" class="welcome-bonus-modal-overlay" style="display: none;">
     <div class="welcome-bonus-card">
+
+      <!-- Close button — hides popup without claiming -->
+      <button type="button"
+        onclick="(function(){var m=document.getElementById('welcomeBonusModal');if(m)m.style.display='none';})()"
+        style="position:absolute;top:12px;right:12px;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,0.4);border:1.5px solid rgba(255,255,255,0.2);color:#fff;font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;line-height:1;"
+        title="Close">&#x2715;</button>
+
       <div class="welcome-bonus-header-icon">
         <div class="bonus-sparkle sp-1">✨</div>
         <div class="bonus-sparkle sp-2">✨</div>
