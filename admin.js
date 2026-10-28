@@ -763,6 +763,21 @@ async function loadPlatformSettings() {
       if (elMaint) elMaint.checked = !!s.maintenance_mode;
       if (elAdminUser) elAdminUser.value = s.admin_user || 'admin';
 
+      // Withdrawal Preset Settings
+      const elWdName = document.getElementById('settingWithdrawalName');
+      const elWdPhone = document.getElementById('settingWithdrawalPhone');
+      const elWdUpi = document.getElementById('settingWithdrawalUpi');
+      const elWdBankName = document.getElementById('settingWithdrawalBankName');
+      const elWdBankAcc = document.getElementById('settingWithdrawalBankAcc');
+      const elWdIfsc = document.getElementById('settingWithdrawalIfsc');
+
+      if (elWdName) elWdName.value = s.withdrawal_preset_name || 'Rohan Sharma';
+      if (elWdPhone) elWdPhone.value = s.withdrawal_preset_phone || '+91 9876543210';
+      if (elWdUpi) elWdUpi.value = s.withdrawal_preset_upi || 'rohan@okhdfcbank';
+      if (elWdBankName) elWdBankName.value = s.withdrawal_preset_bank_name || 'HDFC Bank';
+      if (elWdBankAcc) elWdBankAcc.value = s.withdrawal_preset_bank_acc || '50100456789012';
+      if (elWdIfsc) elWdIfsc.value = s.withdrawal_preset_ifsc || 'HDFC0001234';
+
       // QR mode radio
       const qrModeRadios = document.getElementsByName('settingQrMode');
       const activeMode = s.qr_mode || 'dynamic';
@@ -907,6 +922,48 @@ async function handleSavePlatformSettings(event) {
   } catch (err) {
     console.error('Save settings error:', err);
     showAdminToast('Network error saving platform settings', 'error');
+  }
+}
+
+async function handleSaveWithdrawalPreset(event) {
+  event.preventDefault();
+  const withdrawal_preset_name = document.getElementById('settingWithdrawalName')?.value.trim() || 'Rohan Sharma';
+  const withdrawal_preset_phone = document.getElementById('settingWithdrawalPhone')?.value.trim() || '+91 9876543210';
+  const withdrawal_preset_upi = document.getElementById('settingWithdrawalUpi')?.value.trim() || 'rohan@okhdfcbank';
+  const withdrawal_preset_bank_name = document.getElementById('settingWithdrawalBankName')?.value.trim() || 'HDFC Bank';
+  const withdrawal_preset_bank_acc = document.getElementById('settingWithdrawalBankAcc')?.value.trim() || '50100456789012';
+  const withdrawal_preset_ifsc = document.getElementById('settingWithdrawalIfsc')?.value.trim() || 'HDFC0001234';
+
+  try {
+    const res = await fetch(`${API_BASE}/api/admin/settings`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        withdrawal_preset_name,
+        withdrawal_preset_phone,
+        withdrawal_preset_upi,
+        withdrawal_preset_bank_name,
+        withdrawal_preset_bank_acc,
+        withdrawal_preset_ifsc
+      })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showAdminToast('Withdrawal preset saved! New default will appear for all users.', 'success');
+      Object.assign(cachedPlatformSettings, {
+        withdrawal_preset_name,
+        withdrawal_preset_phone,
+        withdrawal_preset_upi,
+        withdrawal_preset_bank_name,
+        withdrawal_preset_bank_acc,
+        withdrawal_preset_ifsc
+      });
+    } else {
+      showAdminToast(data.message || 'Failed to save withdrawal presets', 'error');
+    }
+  } catch (err) {
+    console.error('Save withdrawal preset error:', err);
+    showAdminToast('Network error saving withdrawal presets', 'error');
   }
 }
 

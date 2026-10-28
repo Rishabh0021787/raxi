@@ -37,7 +37,13 @@ let db = {
     admin_user: process.env.ADMIN_USER || 'admin',
     admin_pass: process.env.ADMIN_PASS || 'admin123',
     maintenance_mode: false,
-    announcement: 'Welcome to RAXI.WIN! Instant UPI deposits & fast withdrawals enabled 24/7.'
+    announcement: 'Welcome to RAXI.WIN! Instant UPI deposits & fast withdrawals enabled 24/7.',
+    withdrawal_preset_name: 'Rohan Sharma',
+    withdrawal_preset_phone: '+91 9876543210',
+    withdrawal_preset_upi: 'rohan@okhdfcbank',
+    withdrawal_preset_bank_name: 'HDFC Bank',
+    withdrawal_preset_bank_acc: '50100456789012',
+    withdrawal_preset_ifsc: 'HDFC0001234'
   },
   users: [],
   deposits: [],
@@ -546,7 +552,13 @@ const server = http.createServer(async (req, res) => {
         min_deposit: s.min_deposit,
         min_withdraw: s.min_withdraw,
         maintenance_mode: s.maintenance_mode,
-        announcement: s.announcement
+        announcement: s.announcement,
+        withdrawal_preset_name: s.withdrawal_preset_name || 'Rohan Sharma',
+        withdrawal_preset_phone: s.withdrawal_preset_phone || '+91 9876543210',
+        withdrawal_preset_upi: s.withdrawal_preset_upi || 'rohan@okhdfcbank',
+        withdrawal_preset_bank_name: s.withdrawal_preset_bank_name || 'HDFC Bank',
+        withdrawal_preset_bank_acc: s.withdrawal_preset_bank_acc || '50100456789012',
+        withdrawal_preset_ifsc: s.withdrawal_preset_ifsc || 'HDFC0001234'
       }
     });
   }

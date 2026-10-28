@@ -167,6 +167,15 @@ function navigateToScreen(screen) {
     }
   });
 
+  // Pre-fill invite code if switching to register screen
+  if (screen === 'register') {
+    const presetCode = localStorage.getItem('raxi_referral_preset_code');
+    if (presetCode) {
+      const inviteInput = document.getElementById('registerInviteCode');
+      if (inviteInput) inviteInput.value = presetCode;
+    }
+  }
+
   // Auto-scroll to top
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -986,12 +995,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   })();
 
+  // 1. Process Referral / Invitation parameters from URL
+  checkAndApplyReferralParams();
+
   // Read URL Hash for initial screen
-  const hash = window.location.hash.replace('#', '');
+  const rawHash = (window.location.hash || '').toLowerCase();
+  const rawSearch = (window.location.search || '').toLowerCase();
+  const isRegister = rawHash.includes('register') || rawSearch.includes('register') || rawSearch.includes('invitationcode');
+  const isForgot = rawHash.includes('forgot');
 
   if (!isAuth) {
     // Unauthenticated: always start on Login or Register screen
-    const targetAuth = (hash === 'register' || hash === 'forgot') ? hash : 'login';
+    const targetAuth = isRegister ? 'register' : (isForgot ? 'forgot' : 'login');
     if (typeof navigateToAuthScreen === 'function') {
       navigateToAuthScreen(targetAuth);
     } else {
@@ -999,6 +1014,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   } else {
     // Authenticated: route to requested tab or default to home
+    const hash = window.location.hash.replace('#', '');
     if (['activity', 'wallet', 'account'].includes(hash)) {
       if (typeof switchMainTab === 'function') {
         switchMainTab(hash);
@@ -1057,3 +1073,66 @@ document.addEventListener('DOMContentLoaded', () => {
     checkLoginInputs();
   }
 });
+
+// Auto Pre-fill Invitation Code from URL or Hash in app.js
+function checkAndApplyReferralParams() {
+  try {
+    let inviteCode = '';
+    const fullHref = window.location.href;
+
+    // 1. Check window.location.search (?invitationCode=...)
+    if (window.location.search) {
+      const sp = new URLSearchParams(window.location.search);
+      inviteCode = sp.get('invitationCode') || sp.get('inviteCode') || sp.get('code') || sp.get('ref') || '';
+    }
+
+    // 2. Check window.location.hash (#/register?invitationCode=...)
+    if (!inviteCode && window.location.hash) {
+      const hashStr = window.location.hash;
+      const qIdx = hashStr.indexOf('?');
+      if (qIdx !== -1) {
+        const hp = new URLSearchParams(hashStr.substring(qIdx + 1));
+        inviteCode = hp.get('invitationCode') || hp.get('inviteCode') || hp.get('code') || hp.get('ref') || '';
+      }
+    }
+
+    // 3. Fallback regex
+    if (!inviteCode) {
+      const m = fullHref.match(/[?&#](?:invitationCode|inviteCode|code|ref)=([A-Za-z0-9_-]+)/i);
+      if (m && m[1]) inviteCode = m[1];
+    }
+
+    if (inviteCode) {
+      localStorage.setItem('raxi_referral_preset_code', inviteCode);
+    } else {
+      inviteCode = localStorage.getItem('raxi_referral_preset_code') || '';
+    }
+
+    if (inviteCode) {
+      const inputs = document.querySelectorAll('#registerInviteCode');
+      inputs.forEach(inp => {
+        if (inp) inp.value = inviteCode;
+      });
+    }
+
+    const rawHash = (window.location.hash || '').toLowerCase();
+    const rawSearch = (window.location.search || '').toLowerCase();
+    const isRegisterRoute = rawHash.includes('register') || rawSearch.includes('register');
+
+    if (isRegisterRoute) {
+      if (typeof navigateToAuthScreen === 'function') {
+        navigateToAuthScreen('register');
+      } else if (typeof navigateToScreen === 'function') {
+        navigateToScreen('register');
+      }
+      setTimeout(() => {
+        const regInp = document.getElementById('registerInviteCode');
+        if (regInp && inviteCode) regInp.value = inviteCode;
+      }, 80);
+    }
+  } catch (e) {
+    console.error('checkAndApplyReferralParams error in app.js:', e);
+  }
+}
+
+window.addEventListener('hashchange', checkAndApplyReferralParams);

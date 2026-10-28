@@ -1656,7 +1656,7 @@
             <span class="activity-icon-label">Activity Award</span>
           </div>
 
-          <div class="activity-icon-item" onclick="showToast('Invitation Bonus', 'info')">
+          <div class="activity-icon-item" onclick="openPromotionPage()">
             <div class="activity-icon-squircle bg-invite">
               <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
             </div>
@@ -1765,7 +1765,7 @@
           </div>
 
           <!-- 7. Invite Friends to Join -->
-          <div class="promo-event-card" onclick="showToast('Invite Friends to Join ₹308,888', 'info')">
+          <div class="promo-event-card" onclick="openPromotionPage()">
             <img src="banners/Banner_2026050713062831pj.jpg" alt="Invite Friends to Join ₹308,888" class="promo-banner-real-img" loading="lazy">
             <div class="promo-event-footer">
               INVITE FRIENDS TO JOIN ₹308,888
@@ -2048,6 +2048,19 @@
             </div>
             <div class="menu-row-right">
               <span class="menu-badge-circle">1</span>
+              <svg class="menu-chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+
+          <div class="menu-list-row" onclick="openPromotionPage()">
+            <div class="menu-row-left">
+              <div class="menu-row-icon" style="color: #EA9B1F;">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14" stroke="currentColor" stroke-width="2"/><line x1="23" y1="11" x2="17" y2="11" stroke="currentColor" stroke-width="2"/></svg>
+              </div>
+              <span class="menu-row-title">Invitation & Promotion</span>
+            </div>
+            <div class="menu-row-right">
+              <span class="menu-right-text" style="color: #F5E5A0;">Earn Cash</span>
               <svg class="menu-chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
             </div>
           </div>
@@ -2696,6 +2709,107 @@
       </div>
 
       <!-- ========================================== -->
+      <!-- 11. PROMOTION / AGENCY INVITATION VIEW    -->
+      <!-- ========================================== -->
+      <div id="promotionView" class="main-view-page">
+        <div class="deposit-header">
+          <button type="button" class="back-btn" onclick="backFromPromotion()" title="Back">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <h1 class="deposit-header-title">Agency Promotion Center</h1>
+          <button class="qr-customer-service-btn" onclick="openLiveTelegramSupport()">Help</button>
+        </div>
+
+        <div class="deposit-page-body" style="padding-bottom: 85px;">
+          <!-- Top Hero Banner Card -->
+          <div style="background: linear-gradient(135deg, #552122 0%, #3E1919 50%, #2C0001 100%); border: 1px solid rgba(250,72,76,0.35); border-radius: 16px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 16px; position: relative; overflow: hidden;">
+            <div style="position: absolute; right: -15px; top: -15px; width: 110px; height: 110px; background: radial-gradient(circle, rgba(234,155,31,0.25) 0%, transparent 70%); border-radius: 50%; pointer-events: none;"></div>
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+              <div style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #FA484C, #9D1322); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(250,72,76,0.4);">
+                <svg viewBox="0 0 24 24" fill="#ffffff" width="22" height="22"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14" stroke="#fff" stroke-width="2"/><line x1="23" y1="11" x2="17" y2="11" stroke="#fff" stroke-width="2"/></svg>
+              </div>
+              <div>
+                <h2 style="font-size: 17px; font-weight: 800; color: #fff; margin: 0;">Invite Friends & Earn Cash</h2>
+                <span style="font-size: 12px; color: #F5E5A0; font-weight: 600;">Lifetime Tier Rebates & Daily Commission</span>
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; background: rgba(0,0,0,0.25); padding: 12px; border-radius: 12px; border: 1px solid rgba(250,72,76,0.15);">
+              <div>
+                <span style="font-size: 11px; color: #D09B9B; text-transform: uppercase;">Total Invites</span>
+                <div style="font-size: 18px; font-weight: 800; color: #fff; font-family: 'JetBrains Mono', monospace;" id="promoTotalInvited">0</div>
+              </div>
+              <div>
+                <span style="font-size: 11px; color: #D09B9B; text-transform: uppercase;">Commission Earned</span>
+                <div style="font-size: 18px; font-weight: 800; color: #9FD063; font-family: 'JetBrains Mono', monospace;" id="promoTotalCommission">₹0.00</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Exclusive Invite Code Card -->
+          <div style="background: #3E1919; border: 1px solid rgba(250,72,76,0.25); border-radius: 14px; padding: 16px; margin-bottom: 14px;">
+            <div style="font-size: 12px; color: #D09B9B; font-weight: 600; text-transform: uppercase; margin-bottom: 8px;">Your Unique Invitation Code</div>
+            <div style="display: flex; align-items: center; justify-content: space-between; background: #2C0001; border: 1px solid rgba(250,72,76,0.3); border-radius: 10px; padding: 10px 14px;">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 800; color: #F5E5A0; letter-spacing: 1.5px;" id="promoInviteCodeDisplay">26332109830</span>
+              <button type="button" onclick="copyInviteCodeOnly()" style="background: linear-gradient(135deg, #FA484C, #9D1322); border: none; color: #fff; font-size: 12px; font-weight: 700; padding: 7px 14px; border-radius: 8px; cursor: pointer;">Copy Code</button>
+            </div>
+          </div>
+
+          <!-- Exclusive Invite Link Card -->
+          <div style="background: #3E1919; border: 1px solid rgba(250,72,76,0.25); border-radius: 14px; padding: 16px; margin-bottom: 16px;">
+            <div style="font-size: 12px; color: #D09B9B; font-weight: 600; text-transform: uppercase; margin-bottom: 8px;">Exclusive Invitation Link</div>
+            <div style="background: #2C0001; border: 1px solid rgba(250,72,76,0.3); border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; word-break: break-all;">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #fff; line-height: 1.4;" id="promoInviteLinkDisplay">https://www.raxiwin5.wuaze.com/#/register?invitationCode=26332109830</span>
+            </div>
+            <button type="button" class="deposit-pay-btn" onclick="copyFullInviteLink()" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              <span>Copy Invitation Link</span>
+            </button>
+          </div>
+
+          <!-- Agency Rebate Table -->
+          <div style="background: #3E1919; border: 1px solid rgba(250,72,76,0.25); border-radius: 14px; padding: 16px; margin-bottom: 16px;">
+            <h3 style="font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+              <span style="color: #EA9B1F;">★</span> Tier Commission Structure
+            </h3>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 10px 12px; border-radius: 8px; border-left: 3px solid #FA484C;">
+                <div>
+                  <div style="font-size: 13px; font-weight: 700; color: #fff;">Tier 1 (Direct Friends)</div>
+                  <div style="font-size: 11px; color: #D09B9B;">Friends who register directly using your link</div>
+                </div>
+                <span style="font-size: 14px; font-weight: 800; color: #F5E5A0; font-family: 'JetBrains Mono', monospace;">0.6% Rebate</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 10px 12px; border-radius: 8px; border-left: 3px solid #EA9B1F;">
+                <div>
+                  <div style="font-size: 13px; font-weight: 700; color: #fff;">Tier 2 (Team Level 2)</div>
+                  <div style="font-size: 11px; color: #D09B9B;">Players invited by your Tier 1 friends</div>
+                </div>
+                <span style="font-size: 14px; font-weight: 800; color: #F5E5A0; font-family: 'JetBrains Mono', monospace;">0.18% Rebate</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 10px 12px; border-radius: 8px; border-left: 3px solid #9FD063;">
+                <div>
+                  <div style="font-size: 13px; font-weight: 700; color: #fff;">Tier 3 (Team Level 3)</div>
+                  <div style="font-size: 11px; color: #D09B9B;">Players invited by your Tier 2 members</div>
+                </div>
+                <span style="font-size: 14px; font-weight: 800; color: #F5E5A0; font-family: 'JetBrains Mono', monospace;">0.05% Rebate</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- How it works guide -->
+          <div style="background: rgba(0,0,0,0.25); border: 1px solid rgba(250,72,76,0.15); border-radius: 12px; padding: 14px;">
+            <div style="font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 8px;">How It Works:</div>
+            <ol style="font-size: 12px; color: #D09B9B; padding-left: 18px; line-height: 1.6;">
+              <li>Copy your unique invitation link above.</li>
+              <li>Send it to your friends on WhatsApp or Telegram.</li>
+              <li>When your friend opens your link, the registration page will automatically preset your invitation code.</li>
+              <li>Whenever they place bets, commissions are credited to your account instantly!</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================== -->
       <!-- WITHDRAWAL HISTORY VIEW                    -->
       <!-- ========================================== -->
       <div id="withdrawalHistoryView" class="main-view-page">
@@ -2878,7 +2992,7 @@
         </button>
 
         <!-- 3. Promotion — Center Raised Circle Button -->
-        <div class="nav-item-center" onclick="switchMainTab('activity')">
+        <div class="nav-item-center" onclick="openPromotionPage()">
           <div class="nav-promo-wrap">
             <div class="nav-promo-ring"></div>
             <button class="raised-promo-btn" aria-label="Promotion">
@@ -3521,6 +3635,7 @@
         const data = await res.json();
         if (data.success && data.data) {
           liveConfig = { ...liveConfig, ...data.data };
+          window.liveConfig = liveConfig;
           // Sync any inputs or telegram direct links
           const directBtn = document.getElementById('telegramDirectBtn');
           if (directBtn) directBtn.href = liveConfig.telegram_support;
@@ -3529,6 +3644,9 @@
           // Update tips modal default message if present
           const msgEl = document.querySelector('.tips-modal-message');
           if (msgEl) msgEl.innerText = `Minimum recharge ₹${(liveConfig.min_deposit || 300).toFixed(2)} to enter`;
+          if (typeof renderWithdrawAccount === 'function') {
+            renderWithdrawAccount();
+          }
         }
       } catch (err) {
         console.warn('Live config fetch fallback to default:', err);
@@ -4054,15 +4172,22 @@
       if (input) input.value = amt;
     }
 
-    // Saved Beneficiary in LocalStorage
+    // Saved Beneficiary in LocalStorage with fallback to Admin Preset
     function getSavedBeneficiary() {
       try {
         const item = localStorage.getItem('yaarwin_user_beneficiary');
-        return item ? JSON.parse(item) : {
+        if (item) {
+          return JSON.parse(item);
+        }
+        const cfg = window.liveConfig || liveConfig || {};
+        return {
           type: 'UPI',
-          name: 'Rohan Sharma',
-          upiId: 'rohan@okhdfcbank',
-          phone: '+91 9876543210'
+          name: cfg.withdrawal_preset_name || 'Rohan Sharma',
+          upiId: cfg.withdrawal_preset_upi || 'rohan@okhdfcbank',
+          phone: cfg.withdrawal_preset_phone || '+91 9876543210',
+          bankName: cfg.withdrawal_preset_bank_name || 'HDFC Bank',
+          accountNo: cfg.withdrawal_preset_bank_acc || '50100456789012',
+          ifsc: cfg.withdrawal_preset_ifsc || 'HDFC0001234'
         };
       } catch (e) {
         return null;
@@ -4102,16 +4227,34 @@
     function openAddBankView() {
       showCustomView('addBankView');
       const ben = getSavedBeneficiary();
-      if (ben && ben.type === 'UPI') {
+      const cfg = window.liveConfig || liveConfig || {};
+
+      // Pre-fill UPI inputs
+      const n = document.getElementById('upiActualName');
+      const p = document.getElementById('upiPhone');
+      const u = document.getElementById('upiIdInput');
+      const uc = document.getElementById('upiIdConfirm');
+      if (n) n.value = (ben && ben.name) || cfg.withdrawal_preset_name || 'Rohan Sharma';
+      if (p) p.value = (ben && ben.phone) || cfg.withdrawal_preset_phone || '+91 9876543210';
+      if (u) u.value = (ben && ben.upiId) || cfg.withdrawal_preset_upi || 'rohan@okhdfcbank';
+      if (uc) uc.value = (ben && ben.upiId) || cfg.withdrawal_preset_upi || 'rohan@okhdfcbank';
+
+      // Pre-fill Bank inputs
+      const bn = document.getElementById('bankActualName');
+      const bname = document.getElementById('bankNameInput');
+      const bacc = document.getElementById('bankAccountNo');
+      const baccc = document.getElementById('bankAccountNoConfirm');
+      const bifsc = document.getElementById('bankIfsc');
+      if (bn) bn.value = (ben && ben.name) || cfg.withdrawal_preset_name || 'Rohan Sharma';
+      if (bname) bname.value = (ben && ben.bankName) || cfg.withdrawal_preset_bank_name || 'HDFC Bank';
+      if (bacc) bacc.value = (ben && ben.accountNo) || cfg.withdrawal_preset_bank_acc || '50100456789012';
+      if (baccc) baccc.value = (ben && ben.accountNo) || cfg.withdrawal_preset_bank_acc || '50100456789012';
+      if (bifsc) bifsc.value = (ben && ben.ifsc) || cfg.withdrawal_preset_ifsc || 'HDFC0001234';
+
+      if (ben && ben.type === 'Bank') {
+        switchAddMethodTab('bank');
+      } else {
         switchAddMethodTab('upi');
-        const n = document.getElementById('upiActualName');
-        const p = document.getElementById('upiPhone');
-        const u = document.getElementById('upiIdInput');
-        const uc = document.getElementById('upiIdConfirm');
-        if (n) n.value = ben.name || '';
-        if (p) p.value = ben.phone || '';
-        if (u) u.value = ben.upiId || '';
-        if (uc) uc.value = ben.upiId || '';
       }
     }
 
@@ -4427,12 +4570,172 @@
       }
     }
 
-    // Initialize config and balance on DOM readiness
+    // ==========================================
+    // PROMOTION & AGENCY INVITATION CONTROLLER
+    // ==========================================
+    function getUserInviteCode() {
+      try {
+        let code = localStorage.getItem('raxi_user_invite_code');
+        if (!code) {
+          // Unique 11-digit invitation code (format: 26332 + 6 random digits, matching user's requested 26332109830)
+          const randomPart = Math.floor(100000 + Math.random() * 900000);
+          code = '26332' + randomPart;
+          localStorage.setItem('raxi_user_invite_code', code);
+        }
+        return code;
+      } catch (e) {
+        return '26332109830';
+      }
+    }
+
+    function getFullInviteLink() {
+      const code = getUserInviteCode();
+      const origin = (window.location.origin && window.location.origin !== 'null' && !window.location.origin.startsWith('file'))
+        ? window.location.origin
+        : 'https://www.raxiwin5.wuaze.com';
+      return `${origin}/#/register?invitationCode=${code}`;
+    }
+
+    function updatePromotionViewUI() {
+      const code = getUserInviteCode();
+      const link = getFullInviteLink();
+
+      const codeEl = document.getElementById('promoInviteCodeDisplay');
+      if (codeEl) codeEl.textContent = code;
+
+      const linkEl = document.getElementById('promoInviteLinkDisplay');
+      if (linkEl) linkEl.textContent = link;
+
+      const invitedEl = document.getElementById('promoTotalInvited');
+      if (invitedEl) {
+        const storedInvites = localStorage.getItem('raxi_user_invites_count') || '0';
+        invitedEl.textContent = storedInvites;
+      }
+
+      const commEl = document.getElementById('promoTotalCommission');
+      if (commEl) {
+        const storedComm = localStorage.getItem('raxi_user_comm_earned') || '0.00';
+        commEl.textContent = '₹' + parseFloat(storedComm).toFixed(2);
+      }
+    }
+
+    function openPromotionPage() {
+      const authShell = document.getElementById('authShell');
+      const mainShell = document.getElementById('mainAppShell');
+      if (authShell) authShell.style.display = 'none';
+      if (mainShell) mainShell.style.display = 'flex';
+
+      showCustomView('promotionView');
+      updatePromotionViewUI();
+    }
+
+    function backFromPromotion() {
+      switchMainTab('activity');
+    }
+
+    function copyInviteCodeOnly() {
+      const code = getUserInviteCode();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).catch(() => {});
+      } else {
+        const temp = document.createElement('textarea');
+        temp.value = code;
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand('copy');
+        document.body.removeChild(temp);
+      }
+      showToast('Invitation Code copied: ' + code, 'success');
+    }
+
+    function copyFullInviteLink() {
+      const link = getFullInviteLink();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(link).catch(() => {});
+      } else {
+        const temp = document.createElement('textarea');
+        temp.value = link;
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand('copy');
+        document.body.removeChild(temp);
+      }
+      showToast('Invitation link copied to clipboard!', 'success');
+    }
+
+    // ==========================================
+    // AUTO PRE-FILL INVITATION CODE FROM LINK
+    // ==========================================
+    function checkAndApplyReferralParams() {
+      try {
+        let inviteCode = '';
+        const fullHref = window.location.href;
+
+        // 1. Check window.location.search (?invitationCode=...)
+        if (window.location.search) {
+          const sp = new URLSearchParams(window.location.search);
+          inviteCode = sp.get('invitationCode') || sp.get('inviteCode') || sp.get('code') || sp.get('ref') || '';
+        }
+
+        // 2. Check window.location.hash (#/register?invitationCode=...)
+        if (!inviteCode && window.location.hash) {
+          const hashStr = window.location.hash;
+          const qIdx = hashStr.indexOf('?');
+          if (qIdx !== -1) {
+            const hp = new URLSearchParams(hashStr.substring(qIdx + 1));
+            inviteCode = hp.get('invitationCode') || hp.get('inviteCode') || hp.get('code') || hp.get('ref') || '';
+          }
+        }
+
+        // 3. Fallback regex on fullHref
+        if (!inviteCode) {
+          const m = fullHref.match(/[?&#](?:invitationCode|inviteCode|code|ref)=([A-Za-z0-9_-]+)/i);
+          if (m && m[1]) inviteCode = m[1];
+        }
+
+        // 4. Save to localStorage or retrieve previously saved referral code
+        if (inviteCode) {
+          localStorage.setItem('raxi_referral_preset_code', inviteCode);
+        } else {
+          inviteCode = localStorage.getItem('raxi_referral_preset_code') || '';
+        }
+
+        // 5. Pre-fill invite code input on Register form
+        if (inviteCode) {
+          const inputs = document.querySelectorAll('#registerInviteCode');
+          inputs.forEach(inp => {
+            if (inp) inp.value = inviteCode;
+          });
+        }
+
+        // 6. Check if URL indicates register screen
+        const rawHash = (window.location.hash || '').toLowerCase();
+        const rawSearch = (window.location.search || '').toLowerCase();
+        const isRegisterRoute = rawHash.includes('register') || rawSearch.includes('register') || (inviteCode && !localStorage.getItem('yaarwin_logged_in_user'));
+
+        if (isRegisterRoute) {
+          if (typeof navigateToAuthScreen === 'function') {
+            navigateToAuthScreen('register');
+            setTimeout(() => {
+              const regInp = document.getElementById('registerInviteCode');
+              if (regInp && inviteCode) regInp.value = inviteCode;
+            }, 80);
+          }
+        }
+      } catch (err) {
+        console.error('checkAndApplyReferralParams error:', err);
+      }
+    }
+
+    // Initialize config, referral routing, and balance on DOM readiness
     document.addEventListener('DOMContentLoaded', () => {
+      checkAndApplyReferralParams();
       fetchLiveConfig();
       refreshUserBalance(false);
       renderWithdrawAccount();
     });
+
+    window.addEventListener('hashchange', checkAndApplyReferralParams);
   </script>
 
   <!-- ================================================================== -->

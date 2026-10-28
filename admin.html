@@ -849,6 +849,57 @@
           </form>
         </div>
 
+        <!-- CARD 2.5: WITHDRAWAL PRESET DETAILS (PLAYER DEFAULT INFORMATION) -->
+        <div class="card-panel-emerald" style="margin-top: 24px;">
+          <div class="panel-header-row">
+            <div class="panel-title-group">
+              <span class="panel-icon">💳</span>
+              <h3 class="panel-title-text">Withdrawal Preset Information (Player Screen Default)</h3>
+            </div>
+          </div>
+          <p style="color: #9cdbbf; font-size: 13px; margin-bottom: 16px;">
+            Configure the default beneficiary details automatically prefilled on players' "Information UPI / Bank" withdrawal screen.
+          </p>
+
+          <form class="platform-settings-form" onsubmit="handleSaveWithdrawalPreset(event)">
+            <div class="settings-two-col">
+              <div class="form-group-block">
+                <label>Actual Name (Beneficiary Holder):</label>
+                <input type="text" id="settingWithdrawalName" class="emerald-input" placeholder="e.g. Rohan Sharma" value="Rohan Sharma">
+              </div>
+
+              <div class="form-group-block">
+                <label>Phone Number:</label>
+                <input type="text" id="settingWithdrawalPhone" class="emerald-input" placeholder="e.g. +91 9876543210" value="+91 9876543210">
+              </div>
+
+              <div class="form-group-block">
+                <label>UPI ID (Preset Handle):</label>
+                <input type="text" id="settingWithdrawalUpi" class="emerald-input" placeholder="e.g. rohan@okhdfcbank" value="rohan@okhdfcbank">
+              </div>
+
+              <div class="form-group-block">
+                <label>Bank Name (Preset):</label>
+                <input type="text" id="settingWithdrawalBankName" class="emerald-input" placeholder="e.g. HDFC Bank" value="HDFC Bank">
+              </div>
+
+              <div class="form-group-block">
+                <label>Bank Account Number:</label>
+                <input type="text" id="settingWithdrawalBankAcc" class="emerald-input" placeholder="e.g. 50100456789012" value="50100456789012">
+              </div>
+
+              <div class="form-group-block">
+                <label>Bank IFSC Code:</label>
+                <input type="text" id="settingWithdrawalIfsc" class="emerald-input" placeholder="e.g. HDFC0001234" value="HDFC0001234" style="text-transform: uppercase;">
+              </div>
+            </div>
+
+            <button type="submit" class="admin-gold-btn" style="margin-top: 14px;">
+              <span>Save Withdrawal Preset Details</span>
+            </button>
+          </form>
+        </div>
+
         <!-- CARD 3: ADMIN CREDENTIALS -->
         <div class="card-panel-emerald">
           <div class="panel-header-row">
