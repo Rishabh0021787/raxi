@@ -16,13 +16,45 @@ class AviatorAudioEngine {
     this.sfxEnabled = true;
     this.initialized = false;
 
+    // Resolve relative path robustly regardless of trailing slash
+    const baseDir = (function() {
+      try {
+        const p = window.location.pathname;
+        return p.substring(0, p.lastIndexOf('/') + 1) || './';
+      } catch (e) {
+        return './';
+      }
+    })();
+
     // HTML5 Audio Elements for uploaded files
-    this.bgMusic = new Audio('audio/bg_music.mp3');
+    this.bgMusic = new Audio(baseDir + 'audio/bg_music.mp3');
     this.bgMusic.loop = true;
     this.bgMusic.volume = 0.65;
+    this.bgMusic.preload = 'auto';
 
-    this.crashSfx = new Audio('audio/crash.mp3');
+    let triedFallbackMusic = false;
+    this.bgMusic.addEventListener('error', (e) => {
+      console.warn("audio/bg_music.mp3 load warning, trying direct bg_music.mp3", e);
+      if (!triedFallbackMusic) {
+        triedFallbackMusic = true;
+        this.bgMusic.src = baseDir + 'bg_music.mp3';
+        this.bgMusic.load();
+        if (this.musicEnabled) this.playMusic();
+      }
+    });
+
+    this.crashSfx = new Audio(baseDir + 'audio/crash.mp3');
     this.crashSfx.volume = 0.90;
+    this.crashSfx.preload = 'auto';
+
+    let triedFallbackCrash = false;
+    this.crashSfx.addEventListener('error', () => {
+      if (!triedFallbackCrash) {
+        triedFallbackCrash = true;
+        this.crashSfx.src = baseDir + 'crash.mp3';
+        this.crashSfx.load();
+      }
+    });
 
     // Propeller hum Web Audio nodes
     this.engineOsc1 = null;
@@ -62,9 +94,9 @@ class AviatorAudioEngine {
       this.init();
     }
     if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume();
+      this.ctx.resume().catch(() => {});
     }
-    if (this.musicEnabled && this.bgMusic.paused) {
+    if (this.musicEnabled && this.bgMusic && this.bgMusic.paused) {
       this.playMusic();
     }
   }
@@ -74,17 +106,44 @@ class AviatorAudioEngine {
    * ----------------------------------------------------------- */
   playMusic() {
     if (!this.musicEnabled) return;
-    const playPromise = this.bgMusic.play();
-    if (playPromise !== undefined) {
-      playPromise.catch(err => {
-        // Autoplay policy prevented playback, will resume on user gesture
-        console.log("Autoplay waiting for gesture:", err.message);
-      });
+    try {
+      const playPromise = this.bgMusic.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          this.updateSoundIconUI(true);
+        }).catch(err => {
+          // Autoplay policy prevented playback, will resume on user gesture
+          console.log("Autoplay waiting for gesture:", err.message);
+          this.updateSoundIconUI(false);
+        });
+      }
+    } catch (e) {
+      console.warn("playMusic error:", e);
     }
   }
 
   pauseMusic() {
-    this.bgMusic.pause();
+    if (this.bgMusic) {
+      this.bgMusic.pause();
+      this.updateSoundIconUI(false);
+    }
+  }
+
+  updateSoundIconUI(isPlaying) {
+    const onIcon = document.getElementById('soundIconOn');
+    const offIcon = document.getElementById('soundIconOff');
+    const quickSoundBtn = document.getElementById('quickSoundBtn');
+    if (onIcon && offIcon) {
+      onIcon.style.display = isPlaying ? 'block' : 'none';
+      offIcon.style.display = isPlaying ? 'none' : 'block';
+    }
+    if (quickSoundBtn) {
+      quickSoundBtn.style.color = isPlaying ? '#22c55e' : '#ef4444';
+    }
+    const hint = document.getElementById('audioHint');
+    if (hint && isPlaying) {
+      hint.style.display = 'none';
+    }
   }
 
   toggleMusic(enabled) {
@@ -247,3 +306,16 @@ class AviatorAudioEngine {
 
 // Global audio singleton
 window.AviatorAudio = new AviatorAudioEngine();
+
+// Auto-unlock WebAudio context & start background music on first user touch/click anywhere
+(function() {
+  const unlockAudio = () => {
+    if (window.AviatorAudio) {
+      window.AviatorAudio.resumeContext();
+    }
+  };
+  ['click', 'touchstart', 'touchend', 'pointerdown', 'mousedown', 'keydown'].forEach(ev => {
+    window.addEventListener(ev, unlockAudio, { passive: true });
+    document.addEventListener(ev, unlockAudio, { passive: true });
+  });
+})();

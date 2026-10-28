@@ -1294,6 +1294,44 @@ const server = http.createServer(async (req, res) => {
   const ext = path.extname(filePath).toLowerCase();
   const contentType = MIME_TYPES[ext] || 'application/octet-stream';
 
+  // Support HTTP 206 Partial Content range requests for audio and media streaming
+  if (['.mp3', '.wav', '.ogg', '.mp4'].includes(ext)) {
+    try {
+      if (fs.existsSync(filePath)) {
+        const stat = fs.statSync(filePath);
+        const fileSize = stat.size;
+        const range = req.headers.range;
+
+        if (range) {
+          const parts = range.replace(/bytes=/, "").split("-");
+          const start = parseInt(parts[0], 10);
+          const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+          const chunksize = (end - start) + 1;
+          const file = fs.createReadStream(filePath, { start, end });
+
+          res.writeHead(206, {
+            'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+            'Accept-Ranges': 'bytes',
+            'Content-Length': chunksize,
+            'Content-Type': contentType,
+            'Access-Control-Allow-Origin': '*'
+          });
+          return file.pipe(res);
+        } else {
+          res.writeHead(200, {
+            'Content-Length': fileSize,
+            'Accept-Ranges': 'bytes',
+            'Content-Type': contentType,
+            'Access-Control-Allow-Origin': '*'
+          });
+          return fs.createReadStream(filePath).pipe(res);
+        }
+      }
+    } catch (streamErr) {
+      console.warn('Audio streaming range error, falling back:', streamErr);
+    }
+  }
+
   fs.readFile(filePath, (err, content) => {
     if (err) {
       if (err.code === 'ENOENT') {

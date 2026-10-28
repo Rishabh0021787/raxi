@@ -527,13 +527,38 @@ class AviatorBettingEngine {
       });
     }
 
+    // Quick Sound / Music Toggle Button
+    const quickSoundBtn = document.getElementById('quickSoundBtn');
+    if (quickSoundBtn) {
+      quickSoundBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (window.AviatorAudio) {
+          window.AviatorAudio.resumeContext();
+          const enabled = window.AviatorAudio.toggleMusic();
+          const onIcon = document.getElementById('soundIconOn');
+          const offIcon = document.getElementById('soundIconOff');
+          if (onIcon) onIcon.style.display = enabled ? 'block' : 'none';
+          if (offIcon) offIcon.style.display = enabled ? 'none' : 'block';
+          quickSoundBtn.style.color = enabled ? '#22c55e' : '#ef4444';
+          if (musicSwitch) musicSwitch.checked = enabled;
+        }
+      });
+    }
+
     // Audio toggles
     const musicSwitch = document.getElementById('musicSwitch');
     const sfxSwitch = document.getElementById('sfxSwitch');
     const animSwitch = document.getElementById('animationSwitch');
 
     if (musicSwitch) musicSwitch.addEventListener('change', (e) => {
-      if (window.AviatorAudio) window.AviatorAudio.toggleMusic(e.target.checked);
+      if (window.AviatorAudio) {
+        window.AviatorAudio.toggleMusic(e.target.checked);
+        const onIcon = document.getElementById('soundIconOn');
+        const offIcon = document.getElementById('soundIconOff');
+        if (onIcon) onIcon.style.display = e.target.checked ? 'block' : 'none';
+        if (offIcon) offIcon.style.display = e.target.checked ? 'none' : 'block';
+        if (quickSoundBtn) quickSoundBtn.style.color = e.target.checked ? '#22c55e' : '#ef4444';
+      }
     });
     if (sfxSwitch) sfxSwitch.addEventListener('change', (e) => {
       if (window.AviatorAudio) window.AviatorAudio.toggleSFX(e.target.checked);
@@ -583,13 +608,16 @@ class AviatorBettingEngine {
 
   initAudioHint() {
     const hint = document.getElementById('audioHint');
-    if (!hint) return;
     const start = () => {
-      if (window.AviatorAudio) window.AviatorAudio.resumeContext();
-      hint.style.display = 'none';
+      if (window.AviatorAudio) {
+        window.AviatorAudio.resumeContext();
+      }
+      if (hint) hint.style.display = 'none';
     };
-    hint.addEventListener('click', start);
-    window.addEventListener('click', start, { once: true });
+    if (hint) hint.addEventListener('click', start);
+    ['click', 'touchstart', 'touchend', 'pointerdown'].forEach(ev => {
+      window.addEventListener(ev, start, { once: true, passive: true });
+    });
   }
 }
 
