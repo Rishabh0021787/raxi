@@ -111,7 +111,7 @@
               </svg>
             </button>
             <div class="input-wrapper">
-              <input type="tel" id="loginIdentifier" class="input-field" placeholder="Please enter the phone number" autocomplete="username">
+              <input type="tel" id="loginIdentifier" class="input-field" placeholder="4564564564" autocomplete="username">
             </div>
           </div>
         </div>
@@ -142,19 +142,22 @@
           </div>
         </div>
 
-        <!-- Remember Password -->
-        <div class="agreement-row" onclick="toggleCheckbox('rememberCheckbox')">
-          <div class="custom-checkbox" id="rememberCheckbox">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
+        <!-- Remember Password & Forgot Password Row -->
+        <div class="remember-forgot-row">
+          <div class="agreement-row" onclick="toggleCheckbox('rememberCheckbox')">
+            <div class="custom-checkbox checked" id="rememberCheckbox">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+            <span class="agreement-text">Remember password</span>
           </div>
-          <span class="agreement-text">Remember password</span>
+          <a href="forgot-password.html" class="forgot-link-red">Forgot password</a>
         </div>
 
         <!-- Action Buttons -->
         <div class="auth-actions">
-          <button type="submit" id="loginSubmitBtn" class="btn-primary is-inactive">
+          <button type="submit" id="loginSubmitBtn" class="btn-primary">
             Log in
           </button>
           <button type="button" class="btn-outline" onclick="window.location.href='register.html'">
@@ -164,18 +167,7 @@
       </form>
 
       <!-- Footer Links -->
-      <div class="auth-footer-links">
-        <button type="button" class="footer-link-item" onclick="window.location.href='forgot-password.html'">
-          <div class="footer-icon-badge">
-            <svg viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="11" fill="none" stroke="var(--accent-red)" stroke-width="1.8"/>
-              <path d="M15 11H9c-.6 0-1 .4-1 1v5c0 .6.4 1 1 1h6c.6 0 1-.4 1-1v-5c0-.6-.4-1-1-1z" fill="var(--accent-red)"/>
-              <path d="M10 11V9a2 2 0 0 1 4 0v2" fill="none" stroke="var(--accent-red)" stroke-width="1.8"/>
-            </svg>
-          </div>
-          <span>Forgot password</span>
-        </button>
-
+      <div class="auth-footer-links" style="justify-content: center;">
         <!-- Customer Service -> Telegram Link -->
         <button type="button" class="footer-link-item" onclick="openSupportModal()">
           <div class="footer-icon-badge">

@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { WebSocketServer } from 'ws';
+import { createClient } from '@supabase/supabase-js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -10,95 +11,193 @@ const __dirname = path.dirname(__filename);
 const PORT = parseInt(process.env.PORT || '3005', 10);
 const HOST = '0.0.0.0';
 
-const DB_FILE = path.join(__dirname, 'data', 'db.json');
-const DB_SEED_FILE = path.join(__dirname, 'data', 'db.seed.json');
+// ============================================================
+// 1. SUPABASE CLIENT
+// ============================================================
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://sdcwvmikonmqecpdvzsp.supabase.co';
+const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkY3d2bWlrb25tcWVjcGR2enNwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMyMDQ1NDAsImV4cCI6MjEwODc4MDU0MH0.K0MUZgLAs5NS2P0lQrJjXbDnr3wHzlJHtDVdcWt_hXk';
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ============================================================
-// 1. DATABASE & PERSISTENCE
+// 2. IN-MEMORY DB (loaded from Supabase at startup)
+//    All existing code uses db.users, db.settings etc.
 // ============================================================
+let db = {
+  settings: {
+    telegram_support: 'https://t.me/raxi_vip_support',
+    telegram_channel: 'https://t.me/raxi_official_channel',
+    upi_id: 'anoctic@okaxis',
+    payee_name: 'RaxiWin Official',
+    qr_image: '/qr_upi.svg',
+    qr_mode: 'dynamic',
+    min_deposit: 300,
+    min_withdraw: 200,
+    admin_user: process.env.ADMIN_USER || 'admin',
+    admin_pass: process.env.ADMIN_PASS || 'admin123',
+    maintenance_mode: false,
+    announcement: 'Welcome to RAXI.WIN! Instant UPI deposits & fast withdrawals enabled 24/7.'
+  },
+  users: [],
+  deposits: [],
+  withdrawals: [],
+  gift_codes: []
+};
 
-// Auto-initialize db.json from db.seed.json on first boot (e.g., Railway fresh deploy).
-// Sensitive values (admin password, UPI ID) are overridden from environment variables.
-function initDBFromSeedIfNeeded() {
-  if (!fs.existsSync(DB_FILE)) {
-    try {
-      const dir = path.dirname(DB_FILE);
-      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-      let seed = { settings: {}, users: [], deposits: [], withdrawals: [], gift_codes: [] };
-      if (fs.existsSync(DB_SEED_FILE)) {
-        seed = JSON.parse(fs.readFileSync(DB_SEED_FILE, 'utf8'));
-      }
-      // Override secrets from Railway environment variables (set in Railway Dashboard > Variables)
-      if (process.env.ADMIN_USER)  seed.settings.admin_user  = process.env.ADMIN_USER;
-      if (process.env.ADMIN_PASS)  seed.settings.admin_pass  = process.env.ADMIN_PASS;
-      if (process.env.UPI_ID)      seed.settings.upi_id      = process.env.UPI_ID;
-      if (process.env.PAYEE_NAME)  seed.settings.payee_name  = process.env.PAYEE_NAME;
-      if (process.env.TG_SUPPORT)  seed.settings.telegram_support  = process.env.TG_SUPPORT;
-      if (process.env.TG_CHANNEL)  seed.settings.telegram_channel  = process.env.TG_CHANNEL;
-      fs.writeFileSync(DB_FILE, JSON.stringify(seed, null, 2), 'utf8');
-      console.log('✅ db.json initialized from seed template with env overrides.');
-    } catch (err) {
-      console.error('Error initializing db.json from seed:', err);
-    }
-  }
-}
-initDBFromSeedIfNeeded();
-
-function loadDB() {
+// Load all data from Supabase into memory at startup
+async function loadDB() {
   try {
-    if (fs.existsSync(DB_FILE)) {
-      let raw = fs.readFileSync(DB_FILE, 'utf8');
-      if (raw.charCodeAt(0) === 0xFEFF) raw = raw.slice(1);
-      const data = JSON.parse(raw);
-      if (!data.gift_codes) {
-        data.gift_codes = [
-          { id: 'GC_1', code: 'DMFIRSTVIP', bonus: 100, claimsUsed: 14, maxClaims: 500, status: 'Active', claimedBy: [], createdAt: '2026-10-28 10:00:00' },
-          { id: 'GC_2', code: 'WELCOME50', bonus: 50, claimsUsed: 88, maxClaims: 1000, status: 'Active', claimedBy: [], createdAt: '2026-10-28 09:30:00' }
-        ]
-      }
-      if (!data.settings) data.settings = {};
-      if (!data.settings.payee_name) data.settings.payee_name = 'DmFirst Pay';
-      if (!data.settings.qr_image) data.settings.qr_image = '/qr_upi.svg';
-      if (!data.settings.qr_mode) data.settings.qr_mode = 'dynamic';
-      return data;
+    console.log('🔄 Loading data from Supabase...');
+
+    // Load settings
+    const { data: settingsRows } = await supabase.from('settings').select('*');
+    if (settingsRows && settingsRows.length > 0) {
+      const s = {};
+      settingsRows.forEach(row => {
+        // Parse booleans and numbers
+        if (row.value === 'true') s[row.key] = true;
+        else if (row.value === 'false') s[row.key] = false;
+        else if (!isNaN(row.value) && row.value !== '') s[row.key] = Number(row.value);
+        else s[row.key] = row.value;
+      });
+      db.settings = { ...db.settings, ...s };
     }
+
+    // Load users
+    const { data: users } = await supabase.from('users').select('*');
+    if (users) db.users = users.map(u => ({
+      uid: u.uid, username: u.username, phone: u.phone || '',
+      email: u.email || '', password: u.password || '',
+      balance: parseFloat(u.balance) || 0, vip: u.vip || 'VIP0',
+      status: u.status || 'Active', referralCode: u.referral_code || '',
+      referredBy: u.referred_by || '',
+      createdAt: u.created_at, lastLogin: u.last_login
+    }));
+
+    // Load deposits
+    const { data: deposits } = await supabase.from('deposits').select('*').order('created_at', { ascending: false });
+    if (deposits) db.deposits = deposits.map(d => ({
+      orderId: d.tx_id, uid: d.uid, username: d.username,
+      amount: parseFloat(d.amount), upiRef: d.upi_ref || '',
+      status: d.status, createdAt: d.created_at
+    }));
+
+    // Load withdrawals
+    const { data: withdrawals } = await supabase.from('withdrawals').select('*').order('created_at', { ascending: false });
+    if (withdrawals) db.withdrawals = withdrawals.map(w => ({
+      orderId: w.tx_id, uid: w.uid, username: w.username,
+      amount: parseFloat(w.amount), upiId: w.upi_id || '',
+      accountName: w.account_name || '', status: w.status, createdAt: w.created_at
+    }));
+
+    // Load gift codes
+    const { data: giftCodes } = await supabase.from('gift_codes').select('*');
+    if (giftCodes) db.gift_codes = giftCodes.map(g => ({
+      id: 'GC_' + g.id, code: g.code, bonus: parseFloat(g.bonus),
+      claimsUsed: g.claims_used, maxClaims: g.max_claims,
+      status: g.status, claimedBy: g.claimed_by || [], createdAt: g.created_at
+    }));
+
+    console.log(`✅ Supabase loaded: ${db.users.length} users, ${db.deposits.length} deposits, ${db.withdrawals.length} withdrawals, ${db.gift_codes.length} gift codes`);
   } catch (err) {
-    console.error('Error loading db.json:', err);
+    console.error('❌ Error loading from Supabase:', err.message);
+    console.log('⚠️ Continuing with empty in-memory DB');
   }
-  return {
-    settings: {
-      telegram_support: process.env.TG_SUPPORT || "https://t.me/raxi_win_support",
-      telegram_channel: process.env.TG_CHANNEL || "https://t.me/raxi_official",
-      upi_id: process.env.UPI_ID || "raxiwin@upi",
-      payee_name: process.env.PAYEE_NAME || "DmFirst Pay",
-      qr_image: "/qr_upi.svg",
-      qr_mode: "dynamic",
-      min_deposit: 100,
-      min_withdraw: 200,
-      admin_user: process.env.ADMIN_USER || "admin",
-      admin_pass: process.env.ADMIN_PASS || "admin123",
-      maintenance_mode: false,
-      announcement: "Welcome to RAXI.WIN! Instant UPI deposits & fast withdrawals enabled 24/7."
-    },
-    users: [],
-    deposits: [],
-    withdrawals: [],
-    gift_codes: [
-      { id: 'GC_1', code: 'DMFIRSTVIP', bonus: 100, claimsUsed: 14, maxClaims: 500, status: 'Active', claimedBy: [], createdAt: '2026-10-28 10:00:00' },
-      { id: 'GC_2', code: 'WELCOME50', bonus: 50, claimsUsed: 88, maxClaims: 1000, status: 'Active', claimedBy: [], createdAt: '2026-10-28 09:30:00' }
-    ]
-  };
 }
 
-let db = loadDB();
+// ── SUPABASE SYNC FUNCTIONS (replace saveDB()) ──────────────
 
+async function saveSettings() {
+  try {
+    const rows = Object.entries(db.settings).map(([key, value]) => ({
+      key, value: String(value)
+    }));
+    for (const row of rows) {
+      await supabase.from('settings').upsert({ key: row.key, value: row.value, updated_at: new Date().toISOString() }, { onConflict: 'key' });
+    }
+  } catch (err) { console.error('saveSettings error:', err.message); }
+}
+
+async function saveUser(user) {
+  try {
+    await supabase.from('users').upsert({
+      uid: user.uid, username: user.username, phone: user.phone || '',
+      email: user.email || '', password: user.password || '',
+      balance: user.balance || 0, vip: user.vip || 'VIP0',
+      status: user.status || 'Active',
+      referral_code: user.referralCode || '',
+      referred_by: user.referredBy || '',
+      last_login: new Date().toISOString()
+    }, { onConflict: 'uid' });
+  } catch (err) { console.error('saveUser error:', err.message); }
+}
+
+async function saveDeposit(deposit) {
+  try {
+    await supabase.from('deposits').upsert({
+      tx_id: deposit.orderId, uid: deposit.uid, username: deposit.username,
+      amount: deposit.amount, upi_ref: deposit.upiRef || '',
+      status: deposit.status, updated_at: new Date().toISOString()
+    }, { onConflict: 'tx_id' });
+  } catch (err) { console.error('saveDeposit error:', err.message); }
+}
+
+async function saveWithdrawal(withdrawal) {
+  try {
+    await supabase.from('withdrawals').upsert({
+      tx_id: withdrawal.orderId, uid: withdrawal.uid, username: withdrawal.username,
+      amount: withdrawal.amount, upi_id: withdrawal.upiId || '',
+      account_name: withdrawal.accountName || '', status: withdrawal.status,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'tx_id' });
+  } catch (err) { console.error('saveWithdrawal error:', err.message); }
+}
+
+async function saveGiftCode(gc) {
+  try {
+    const numId = parseInt(String(gc.id).replace('GC_', '')) || undefined;
+    const payload = {
+      code: gc.code, bonus: gc.bonus,
+      claims_used: gc.claimsUsed, max_claims: gc.maxClaims,
+      status: gc.status, claimed_by: gc.claimedBy || []
+    };
+    if (numId) payload.id = numId;
+    await supabase.from('gift_codes').upsert(payload, { onConflict: 'code' });
+  } catch (err) { console.error('saveGiftCode error:', err.message); }
+}
+
+async function saveWingoBet(bet) {
+  try {
+    await supabase.from('wingo_bets').upsert({
+      bet_id: bet.betId, uid: bet.uid, username: bet.username,
+      game_type: bet.gameType, period: bet.period,
+      bet_type: bet.type, selection: bet.selection, amount: bet.amount,
+      won: bet.won || false, payout: bet.payout || 0,
+      multiplier: bet.multiplier || 0, result_number: bet.resultNumber || null
+    }, { onConflict: 'bet_id' });
+  } catch (err) { console.error('saveWingoBet error:', err.message); }
+}
+
+async function saveWingoRound(round) {
+  try {
+    await supabase.from('wingo_history').insert({
+      period: round.period, game_type: round.gameType,
+      number: round.number, color: round.color,
+      colors: round.colors, size: round.size
+    });
+  } catch (err) { /* ignore duplicate rounds */ }
+}
+
+const DB_FILE = path.join(__dirname, 'data', 'db.json');
+
+// Local file backup + Supabase cloud sync
 function saveDB() {
   try {
     const dir = path.dirname(DB_FILE);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2), 'utf8');
   } catch (err) {
-    console.error('Error saving db.json:', err);
+    // Ignore local disk issues on cloud environments
   }
 }
 
@@ -300,6 +399,7 @@ function resolveWingoRound(gameKey) {
       const user = db.users.find(u => u.uid === (bet.uid || '951603'));
       if (user) {
         user.balance += payout;
+        saveUser(user);
         saveDB();
       }
     }
@@ -317,6 +417,7 @@ function resolveWingoRound(gameKey) {
   };
 
   game.history.unshift(historyItem);
+  saveWingoRound({ period, gameType: gameKey, ...historyItem });
   if (game.history.length > 100) game.history.pop();
   if (wingoState.allBets.length > 100) wingoState.allBets = wingoState.allBets.slice(0, 100);
 
@@ -468,6 +569,7 @@ const server = http.createServer(async (req, res) => {
         lastLogin: new Date().toISOString().replace('T', ' ').substring(0, 19)
       };
       db.users.push(user);
+      saveUser(user);
       saveDB();
     }
     const userDeposits = db.deposits.filter(d => d.uid === uid && d.status === 'Approved');
@@ -515,6 +617,7 @@ const server = http.createServer(async (req, res) => {
     const bonus = tiers[tier];
     user.claimedFirstDepositBonuses.push(tier);
     user.balance = Math.round((user.balance + bonus) * 100) / 100;
+    saveUser(user);
     saveDB();
 
     return sendJSON(res, 200, {
@@ -559,6 +662,7 @@ const server = http.createServer(async (req, res) => {
     };
 
     db.deposits.unshift(newDeposit);
+    saveDeposit(newDeposit);
     saveDB();
     return sendJSON(res, 200, { success: true, data: newDeposit });
   }
@@ -604,6 +708,8 @@ const server = http.createServer(async (req, res) => {
     };
 
     db.withdrawals.unshift(newWithdrawal);
+    saveWithdrawal(newWithdrawal);
+    saveUser(user);
     saveDB();
     return sendJSON(res, 200, { success: true, data: newWithdrawal, balance: user.balance });
   }
@@ -693,6 +799,7 @@ const server = http.createServer(async (req, res) => {
         return sendJSON(res, 400, { ok: false, success: false, message: 'Insufficient balance' });
       }
       user.balance = Math.max(0, user.balance - amount);
+      saveUser(user);
       saveDB();
 
       const game = wingoState.games[gameKey];
@@ -726,6 +833,7 @@ const server = http.createServer(async (req, res) => {
       return sendJSON(res, 400, { ok: false, success: false, message: 'Insufficient balance' });
     }
     user.balance = Math.max(0, user.balance - amount);
+    saveUser(user);
     saveDB();
     return sendJSON(res, 200, { ok: true, success: true, balance: user.balance });
   }
@@ -737,6 +845,7 @@ const server = http.createServer(async (req, res) => {
     const user = db.users.find(u => u.uid === uid);
     if (user) {
       user.balance += winAmount;
+      saveUser(user);
       saveDB();
       return sendJSON(res, 200, { ok: true, success: true, balance: user.balance });
     }
@@ -891,8 +1000,10 @@ const server = http.createServer(async (req, res) => {
         db.users.push(user);
       }
       user.balance += deposit.amount;
+      saveUser(user);
     }
 
+    saveDeposit(deposit);
     saveDB();
     return sendJSON(res, 200, { success: true, message: `Deposit ${deposit.status}`, data: deposit });
   }
@@ -916,9 +1027,11 @@ const server = http.createServer(async (req, res) => {
       const user = db.users.find(u => u.uid === withdrawal.uid);
       if (user) {
         user.balance += withdrawal.amount;
+        saveUser(user);
       }
     }
 
+    saveWithdrawal(withdrawal);
     saveDB();
     return sendJSON(res, 200, { success: true, message: `Withdrawal ${withdrawal.status}`, data: withdrawal });
   }
@@ -930,6 +1043,7 @@ const server = http.createServer(async (req, res) => {
     if (req.method === 'POST') {
       const body = await parseBody(req);
       Object.assign(db.settings, body);
+      saveSettings();
       saveDB();
       return sendJSON(res, 200, { success: true, message: 'Settings saved successfully', data: db.settings });
     }
@@ -950,6 +1064,7 @@ const server = http.createServer(async (req, res) => {
     fs.writeFileSync(qrFilePath, base64Data, { encoding: 'base64' });
     db.settings.qr_image = `/uploads/${qrFileName}`;
     db.settings.qr_mode = 'custom';
+    saveSettings();
     saveDB();
     return sendJSON(res, 200, { success: true, message: 'Primary QR Code image uploaded successfully', qr_image: db.settings.qr_image });
   }
@@ -983,6 +1098,7 @@ const server = http.createServer(async (req, res) => {
       createdAt: new Date().toISOString().replace('T', ' ').substring(0, 19)
     };
     db.gift_codes.unshift(newCode);
+    saveGiftCode(newCode);
     saveDB();
     return sendJSON(res, 200, { success: true, message: 'Gift code created successfully', data: newCode });
   }
@@ -995,6 +1111,7 @@ const server = http.createServer(async (req, res) => {
       return sendJSON(res, 404, { success: false, message: 'Gift code not found' });
     }
     codeItem.status = codeItem.status === 'Active' ? 'Disabled' : 'Active';
+    saveGiftCode(codeItem);
     saveDB();
     return sendJSON(res, 200, { success: true, message: `Code ${codeItem.code} status changed to ${codeItem.status}`, data: codeItem });
   }
@@ -1017,6 +1134,8 @@ const server = http.createServer(async (req, res) => {
     codeItem.claimedBy.push(uid);
     codeItem.claimsUsed++;
     user.balance = Math.round((user.balance + codeItem.bonus) * 100) / 100;
+    saveGiftCode(codeItem);
+    saveUser(user);
     saveDB();
     return sendJSON(res, 200, { success: true, message: `Gift Code redeemed! ₹${codeItem.bonus.toFixed(2)} added to your wallet.`, balance: user.balance, bonus: codeItem.bonus });
   }
@@ -1073,6 +1192,7 @@ const server = http.createServer(async (req, res) => {
       return sendJSON(res, 404, { success: false, message: 'User not found' });
     }
     user.balance = parseFloat(balance) || 0;
+    saveUser(user);
     saveDB();
     return sendJSON(res, 200, { success: true, message: `Balance updated for ${user.username}`, balance: user.balance });
   }
@@ -1216,6 +1336,7 @@ wss.on('connection', (ws) => {
             lastLogin: new Date().toISOString()
           };
           db.users.push(user);
+          saveUser(user);
           saveDB();
         }
         // Re-send init with correct balance for this user
@@ -1228,7 +1349,16 @@ wss.on('connection', (ws) => {
   ws._uid = () => wsUid;
 });
 
-server.listen(PORT, HOST, () => {
-  console.log(`Yaar Win Platform & Admin Server running at http://localhost:${PORT}/`);
-  console.log(`Admin Panel available at http://localhost:${PORT}/admin`);
+// Load Supabase data then start server
+loadDB().then(() => {
+  server.listen(PORT, HOST, () => {
+    console.log(`Yaar Win Platform & Admin Server running at http://localhost:${PORT}/`);
+    console.log(`Admin Panel available at http://localhost:${PORT}/admin`);
+    console.log(`Supabase connected: ${SUPABASE_URL}`);
+  });
+}).catch(err => {
+  console.error("Failed to load from Supabase:", err);
+  server.listen(PORT, HOST, () => {
+    console.log(`Yaar Win Platform running in fallback mode at http://localhost:${PORT}/`);
+  });
 });

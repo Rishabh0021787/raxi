@@ -477,22 +477,14 @@ function handleRegister(e) {
   // Register on server with 0.00 balance
   fetch(`/api/user/info?uid=${newUid}`).catch(() => {});
 
-  showToast('Registration successful! Welcome to RAXI.WIN! Minimum recharge ₹300.00 required to play.', 'success');
+  showToast('Registration successful! Welcome to RAXI.WIN!', 'success');
 
-  // Immediately take user to main app and open Deposit page with minimum recharge requirement
+  // Immediately take user to home page with ₹0.00 starting balance
   setTimeout(() => {
-    if (typeof showMainAppShell === 'function') {
-      showMainAppShell('wallet');
+    if (typeof switchMainTab === 'function') {
+      switchMainTab('home');
     }
-    if (typeof openDepositPage === 'function') {
-      openDepositPage();
-    }
-    const msgEl = document.querySelector('.tips-modal-message');
-    if (msgEl) msgEl.innerText = 'Minimum recharge ₹300.00 to activate account and enter games';
-    if (typeof showRechargeModal === 'function') {
-      showRechargeModal();
-    }
-  }, 700);
+  }, 500);
 }
 
 function handleResetPassword(e) {
@@ -904,6 +896,14 @@ function runStartLoadingScreen() {
 }
 
 function triggerMainPopupsSequence() {
+  // Only trigger promotional popups if user is authenticated
+  try {
+    const u = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
+    if (!u) return;
+    const parsed = JSON.parse(u);
+    if (!parsed || (!parsed.uid && !parsed.identifier)) return;
+  } catch(e) { return; }
+
   const noReminder = localStorage.getItem('no_reminder_date');
   const today = new Date().toDateString();
   if (noReminder === today) return;
@@ -974,24 +974,41 @@ document.addEventListener('DOMContentLoaded', () => {
   initCategoryScrollSpy();
   runStartLoadingScreen();
 
+  // Authentication check
+  const isAuth = (function() {
+    try {
+      const u = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
+      if (!u) return false;
+      const parsed = JSON.parse(u);
+      return !!(parsed && (parsed.uid || parsed.identifier));
+    } catch (e) {
+      return false;
+    }
+  })();
+
   // Read URL Hash for initial screen
   const hash = window.location.hash.replace('#', '');
-  if (['login', 'register', 'forgot'].includes(hash)) {
+
+  if (!isAuth) {
+    // Unauthenticated: always start on Login or Register screen
+    const targetAuth = (hash === 'register' || hash === 'forgot') ? hash : 'login';
     if (typeof navigateToAuthScreen === 'function') {
-      navigateToAuthScreen(hash);
+      navigateToAuthScreen(targetAuth);
     } else {
-      navigateToScreen(hash);
-    }
-  } else if (['home', 'activity', 'wallet', 'account'].includes(hash)) {
-    if (typeof switchMainTab === 'function') {
-      switchMainTab(hash);
+      navigateToScreen(targetAuth);
     }
   } else {
-    // Default directly to Home Page
-    if (typeof switchMainTab === 'function') {
-      switchMainTab('home');
+    // Authenticated: route to requested tab or default to home
+    if (['activity', 'wallet', 'account'].includes(hash)) {
+      if (typeof switchMainTab === 'function') {
+        switchMainTab(hash);
+      }
     } else {
-      navigateToScreen('login');
+      if (typeof switchMainTab === 'function') {
+        switchMainTab('home');
+      } else {
+        navigateToScreen('login');
+      }
     }
   }
 

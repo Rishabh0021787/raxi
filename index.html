@@ -55,6 +55,19 @@
   <!-- Mobile Viewport Container -->
   <div class="app-container" id="appRoot">
 
+    <script>
+      (function() {
+        try {
+          var user = localStorage.getItem('yaarwin_logged_in_user');
+          if (!user || !JSON.parse(user).uid) {
+            document.write('<style>#authShell{display:block !important;}#mainAppShell{display:none !important;}</style>');
+          }
+        } catch(e) {
+          document.write('<style>#authShell{display:block !important;}#mainAppShell{display:none !important;}</style>');
+        }
+      })();
+    </script>
+
     <!-- ================================================================== -->
     <!-- AUTHENTICATION SHELL (Login, Register, Forgot Password)            -->
     <!-- ================================================================== -->
@@ -64,15 +77,38 @@
       <div id="loginScreen" class="screen-view">
         <div class="auth-header">
           <div class="auth-header-nav">
-            <button class="back-btn" onclick="showToast('Home Login Screen', 'info')" title="Back">
+            <button class="back-btn" onclick="handleLoginBack()" title="Back">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="15 18 9 12 15 6"></polyline>
               </svg>
             </button>
-            <div class="logo-container" onclick="showMainAppShell('home')">
+            <div class="logo-container" onclick="handleLoginBack()">
               <img src="logo.png" alt="RAXI .WIN" class="main-logo-img">
             </div>
             <div class="lang-selector" title="Language">
+              <svg viewBox="0 0 32 32" class="flag-icon" style="width: 20px; height: 20px; border-radius: 50%;">
+                <clipPath id="circleClipLogin">
+                  <circle cx="16" cy="16" r="16" />
+                </clipPath>
+                <g clip-path="url(#circleClipLogin)">
+                  <rect width="32" height="32" fill="#B22234" />
+                  <rect y="2.46" width="32" height="2.46" fill="#FFFFFF" />
+                  <rect y="7.38" width="32" height="2.46" fill="#FFFFFF" />
+                  <rect y="12.3" width="32" height="2.46" fill="#FFFFFF" />
+                  <rect y="17.22" width="32" height="2.46" fill="#FFFFFF" />
+                  <rect y="22.14" width="32" height="2.46" fill="#FFFFFF" />
+                  <rect y="27.06" width="32" height="2.46" fill="#FFFFFF" />
+                  <rect width="14" height="14.76" fill="#3C3B6E" />
+                  <circle cx="3" cy="3" r="1" fill="#FFFFFF" />
+                  <circle cx="7" cy="3" r="1" fill="#FFFFFF" />
+                  <circle cx="11" cy="3" r="1" fill="#FFFFFF" />
+                  <circle cx="5" cy="6" r="1" fill="#FFFFFF" />
+                  <circle cx="9" cy="6" r="1" fill="#FFFFFF" />
+                  <circle cx="3" cy="9" r="1" fill="#FFFFFF" />
+                  <circle cx="7" cy="9" r="1" fill="#FFFFFF" />
+                  <circle cx="11" cy="9" r="1" fill="#FFFFFF" />
+                </g>
+              </svg>
               <span>EN</span>
             </div>
           </div>
@@ -124,7 +160,7 @@
                   </svg>
                 </button>
                 <div class="input-wrapper">
-                  <input type="tel" id="loginIdentifier" class="input-field" placeholder="Please enter the phone number" value="9876543210" autocomplete="username">
+                  <input type="tel" id="loginIdentifier" class="input-field" placeholder="4564564564" autocomplete="username">
                 </div>
               </div>
             </div>
@@ -142,7 +178,7 @@
               </div>
               <div class="input-row">
                 <div class="input-wrapper">
-                  <input type="password" id="loginPassword" class="input-field" placeholder="Password" value="password123" autocomplete="current-password">
+                  <input type="password" id="loginPassword" class="input-field" placeholder="Password" autocomplete="current-password">
                   <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('loginPassword', this)">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
@@ -153,13 +189,16 @@
               </div>
             </div>
 
-            <div class="agreement-row" onclick="toggleCheckbox('rememberCheckbox')">
-              <div class="custom-checkbox checked" id="rememberCheckbox">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
+            <div class="remember-forgot-row">
+              <div class="agreement-row" onclick="toggleCheckbox('rememberCheckbox')">
+                <div class="custom-checkbox checked" id="rememberCheckbox">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                </div>
+                <span class="agreement-text">Remember password</span>
               </div>
-              <span class="agreement-text">Remember password</span>
+              <a href="javascript:void(0)" class="forgot-link-red" onclick="navigateToAuthScreen('forgot')">Forgot password</a>
             </div>
 
             <div class="auth-actions">
@@ -172,19 +211,8 @@
             </div>
           </form>
 
-          <div class="auth-footer-links">
-            <button type="button" class="footer-link-item" onclick="navigateToAuthScreen('forgot')">
-              <div class="footer-icon-badge">
-                <svg viewBox="0 0 24 24">
-                  <circle cx="12" cy="12" r="11" fill="none" stroke="var(--accent-red)" stroke-width="1.8"/>
-                  <path d="M15 11H9c-.6 0-1 .4-1 1v5c0 .6.4 1 1 1h6c.6 0 1-.4 1-1v-5c0-.6-.4-1-1-1z" fill="var(--accent-red)"/>
-                  <path d="M10 11V9a2 2 0 0 1 4 0v2" fill="none" stroke="var(--accent-red)" stroke-width="1.8"/>
-                </svg>
-              </div>
-              <span>Forgot password</span>
-            </button>
-
-            <button type="button" class="footer-link-item" onclick="openSupportModal()">
+          <div class="auth-footer-links" style="justify-content: center;">
+            <button type="button" class="footer-link-item" onclick="openLiveTelegramSupport()">
               <div class="footer-icon-badge">
                 <svg viewBox="0 0 24 24">
                   <path d="M12 2C6.48 2 2 6.48 2 12c0 1.82.49 3.53 1.34 5L2 22l5.24-1.31C8.67 21.49 10.29 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2z" fill="var(--accent-red)"/>
@@ -211,7 +239,30 @@
             <div class="logo-container" onclick="showMainAppShell('home')">
               <img src="logo.png" alt="RAXI .WIN" class="main-logo-img">
             </div>
-            <div class="lang-selector">
+            <div class="lang-selector" title="Language">
+              <svg viewBox="0 0 32 32" class="flag-icon" style="width: 20px; height: 20px; border-radius: 50%;">
+                <clipPath id="circleClipReg">
+                  <circle cx="16" cy="16" r="16" />
+                </clipPath>
+                <g clip-path="url(#circleClipReg)">
+                  <rect width="32" height="32" fill="#B22234" />
+                  <rect y="2.46" width="32" height="2.46" fill="#FFFFFF" />
+                  <rect y="7.38" width="32" height="2.46" fill="#FFFFFF" />
+                  <rect y="12.3" width="32" height="2.46" fill="#FFFFFF" />
+                  <rect y="17.22" width="32" height="2.46" fill="#FFFFFF" />
+                  <rect y="22.14" width="32" height="2.46" fill="#FFFFFF" />
+                  <rect y="27.06" width="32" height="2.46" fill="#FFFFFF" />
+                  <rect width="14" height="14.76" fill="#3C3B6E" />
+                  <circle cx="3" cy="3" r="1" fill="#FFFFFF" />
+                  <circle cx="7" cy="3" r="1" fill="#FFFFFF" />
+                  <circle cx="11" cy="3" r="1" fill="#FFFFFF" />
+                  <circle cx="5" cy="6" r="1" fill="#FFFFFF" />
+                  <circle cx="9" cy="6" r="1" fill="#FFFFFF" />
+                  <circle cx="3" cy="9" r="1" fill="#FFFFFF" />
+                  <circle cx="7" cy="9" r="1" fill="#FFFFFF" />
+                  <circle cx="11" cy="9" r="1" fill="#FFFFFF" />
+                </g>
+              </svg>
               <span>EN</span>
             </div>
           </div>
@@ -358,7 +409,30 @@
             <div class="logo-container" onclick="showMainAppShell('home')">
               <img src="logo.png" alt="RAXI .WIN" class="main-logo-img">
             </div>
-            <div class="lang-selector">
+            <div class="lang-selector" title="Language">
+              <svg viewBox="0 0 32 32" class="flag-icon" style="width: 20px; height: 20px; border-radius: 50%;">
+                <clipPath id="circleClipReg">
+                  <circle cx="16" cy="16" r="16" />
+                </clipPath>
+                <g clip-path="url(#circleClipReg)">
+                  <rect width="32" height="32" fill="#B22234" />
+                  <rect y="2.46" width="32" height="2.46" fill="#FFFFFF" />
+                  <rect y="7.38" width="32" height="2.46" fill="#FFFFFF" />
+                  <rect y="12.3" width="32" height="2.46" fill="#FFFFFF" />
+                  <rect y="17.22" width="32" height="2.46" fill="#FFFFFF" />
+                  <rect y="22.14" width="32" height="2.46" fill="#FFFFFF" />
+                  <rect y="27.06" width="32" height="2.46" fill="#FFFFFF" />
+                  <rect width="14" height="14.76" fill="#3C3B6E" />
+                  <circle cx="3" cy="3" r="1" fill="#FFFFFF" />
+                  <circle cx="7" cy="3" r="1" fill="#FFFFFF" />
+                  <circle cx="11" cy="3" r="1" fill="#FFFFFF" />
+                  <circle cx="5" cy="6" r="1" fill="#FFFFFF" />
+                  <circle cx="9" cy="6" r="1" fill="#FFFFFF" />
+                  <circle cx="3" cy="9" r="1" fill="#FFFFFF" />
+                  <circle cx="7" cy="9" r="1" fill="#FFFFFF" />
+                  <circle cx="11" cy="9" r="1" fill="#FFFFFF" />
+                </g>
+              </svg>
               <span>EN</span>
             </div>
           </div>
@@ -3234,6 +3308,39 @@
       if (el) el.classList.toggle('checked');
     }
 
+    // Authentication State & Interceptor
+    function isUserLoggedIn() {
+      try {
+        const stored = localStorage.getItem('yaarwin_logged_in_user');
+        if (!stored) return false;
+        const parsed = JSON.parse(stored);
+        return !!(parsed && (parsed.uid || parsed.identifier));
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function showLoginRequiredModal() {
+      const modal = document.getElementById('loginRequiredModal');
+      if (modal) modal.classList.add('active');
+    }
+
+    function closeLoginRequiredModal() {
+      const modal = document.getElementById('loginRequiredModal');
+      if (modal) modal.classList.remove('active');
+    }
+
+    function redirectToLoginFromModal() {
+      closeLoginRequiredModal();
+      navigateToAuthScreen('login');
+    }
+
+    function handleLoginBack() {
+      // User tapped back on Login screen: allow guest browsing on Home tab
+      switchMainTab('home', true);
+      showToast('Browsing as guest. Log in to play games and access wallet.', 'info');
+    }
+
     // Navigation between Auth screens
     function navigateToAuthScreen(screen) {
       document.getElementById('mainAppShell').style.display = 'none';
@@ -3248,7 +3355,17 @@
     }
 
     // Navigation between Post-Login Main Tabs (Home, Activity, Wallet, Account)
-    function switchMainTab(tabName) {
+    function switchMainTab(tabName, allowGuest = false) {
+      // Guard all tabs other than home for unauthenticated sessions
+      if (tabName !== 'home' && !isUserLoggedIn()) {
+        showLoginRequiredModal();
+        return;
+      }
+      if (tabName === 'home' && !isUserLoggedIn() && !allowGuest) {
+        navigateToAuthScreen('login');
+        return;
+      }
+
       // ── Page transition flash ──
       showPageTransition(() => {
         document.getElementById('authShell').style.display = 'none';
@@ -3294,11 +3411,18 @@
     }
 
     function showMainAppShell(initialTab = 'home') {
+      if (!isUserLoggedIn()) {
+        showLoginRequiredModal();
+        return;
+      }
       switchMainTab(initialTab);
     }
 
     function logoutToAuth() {
       localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+      localStorage.removeItem('raxi_active_uid');
+      currentUserBalance = 0.00;
+      window.updateAllBalanceDisplays(0.00);
       navigateToAuthScreen('login');
       showToast('Logged out to Login menu', 'info');
     }
@@ -3312,6 +3436,10 @@
 
     // Tips Recharge Modal
     function showRechargeModal() {
+      if (!isUserLoggedIn()) {
+        showLoginRequiredModal();
+        return;
+      }
       const modal = document.getElementById('tipsRechargeModal');
       if (modal) modal.classList.add('active');
     }
@@ -3325,6 +3453,34 @@
       closeTipsModal();
       openDepositPage();
     }
+
+    // Global Click Interceptor: when guest is on home view, tapping games, tabs, or deposits triggers popup
+    document.addEventListener('click', function(e) {
+      if (isUserLoggedIn()) return; // Authenticated users have full access
+      
+      const appShell = document.getElementById('mainAppShell');
+      if (!appShell || appShell.style.display === 'none') return;
+
+      // Allow clicks inside modal itself, transition overlay, or toasts
+      if (e.target.closest('#loginRequiredModal') || e.target.closest('#pageTransitionOverlay') || e.target.closest('.toast-container')) {
+        return;
+      }
+
+      // Check if target is an interactive feature
+      const interactive = e.target.closest(
+        '.game-card-item, .game-item, .lottery-grid-item, .category-game-card, .promo-event-card, ' +
+        '.wallet-action-box, .acc-action-item, .btn-deposit-header, .btn-withdraw-header, .history-card-item, ' +
+        '.nav-btn:not(#navBtnHome), [onclick*="openAviator"], [onclick*="openWinGo"], [onclick*="openInAppGame"], ' +
+        '[onclick*="Deposit"], [onclick*="Withdraw"], [onclick*="Gift"], [onclick*="Bonus"], [onclick*="Recharge"]'
+      );
+
+      if (interactive) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        showLoginRequiredModal();
+      }
+    }, true);
 
     // ==========================================
     // GLOBAL STATE & API CONFIG SYNCHRONIZATION
@@ -3466,6 +3622,10 @@
     // 1. DEPOSIT FLOW CONTROLLERS
     // ==========================================
     function openDepositPage() {
+      if (!isUserLoggedIn()) {
+        showLoginRequiredModal();
+        return;
+      }
       showCustomView('depositPageView');
       refreshUserBalance(false);
       renderRecentDepositHistory();
@@ -3475,6 +3635,10 @@
     // IN-APP GAME MODAL CONTROLLERS
     // ==========================================
     function openAviatorGame() {
+      if (!isUserLoggedIn()) {
+        showLoginRequiredModal();
+        return;
+      }
       var modal = document.getElementById('inAppGameModal');
       var iframe = document.getElementById('inAppGameIframe');
       var title = document.getElementById('inAppGameTitle');
@@ -3488,6 +3652,10 @@
     }
 
     function openWinGoGame() {
+      if (!isUserLoggedIn()) {
+        showLoginRequiredModal();
+        return;
+      }
       var modal = document.getElementById('inAppGameModal');
       var iframe = document.getElementById('inAppGameIframe');
       var title = document.getElementById('inAppGameTitle');
@@ -3857,6 +4025,10 @@
     // 3. WITHDRAWAL CONTROLLERS & BENEFICIARY
     // ==========================================
     function openWithdrawPage() {
+      if (!isUserLoggedIn()) {
+        showLoginRequiredModal();
+        return;
+      }
       showCustomView('withdrawPageView');
       refreshUserBalance(false);
       renderWithdrawAccount();
@@ -4071,6 +4243,10 @@
 
     // Withdrawal History
     function openWithdrawalHistory() {
+      if (!isUserLoggedIn()) {
+        showLoginRequiredModal();
+        return;
+      }
       showCustomView('withdrawalHistoryView');
       renderWithdrawalHistory();
     }
@@ -4268,6 +4444,43 @@
       <div class="pto-ring pto-r2"></div>
       <div class="pto-dot"></div>
       <img src="logo.png" alt="" class="pto-logo">
+    </div>
+  </div>
+
+  <!-- ================================================================== -->
+  <!-- EVENT REWARDS / LOGIN REQUIRED MODAL (Matches media_1793202342050) -->
+  <!-- ================================================================== -->
+  <div id="loginRequiredModal" class="login-req-modal-overlay" role="dialog" aria-modal="true">
+    <div class="login-req-modal-card">
+      <button type="button" class="login-req-close-btn" onclick="closeLoginRequiredModal()" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      
+      <div class="login-req-gift-wrap">
+        <img src="assets/event_gift_box_transparent.png" alt="Event Rewards Gift" class="login-req-gift-img">
+      </div>
+
+      <div class="login-req-title">
+        <span class="login-req-emoji">👏</span>
+        <span>Event Rewards</span>
+        <span class="login-req-emoji">👏</span>
+      </div>
+
+      <div class="login-req-desc">
+        Log in to participate in the <span class="login-req-highlight">event rewards</span> and unlock all 8 exclusive rewards
+      </div>
+
+      <div class="login-req-actions">
+        <button type="button" class="login-req-btn-primary" onclick="redirectToLoginFromModal()">
+          Log in now to participate
+        </button>
+        <button type="button" class="login-req-btn-link" onclick="closeLoginRequiredModal()">
+          Don't log in yet, continue browsing
+        </button>
+      </div>
     </div>
   </div>
 
