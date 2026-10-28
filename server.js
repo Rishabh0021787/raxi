@@ -11,10 +11,39 @@ const PORT = parseInt(process.env.PORT || '3005', 10);
 const HOST = '0.0.0.0';
 
 const DB_FILE = path.join(__dirname, 'data', 'db.json');
+const DB_SEED_FILE = path.join(__dirname, 'data', 'db.seed.json');
 
 // ============================================================
 // 1. DATABASE & PERSISTENCE
 // ============================================================
+
+// Auto-initialize db.json from db.seed.json on first boot (e.g., Railway fresh deploy).
+// Sensitive values (admin password, UPI ID) are overridden from environment variables.
+function initDBFromSeedIfNeeded() {
+  if (!fs.existsSync(DB_FILE)) {
+    try {
+      const dir = path.dirname(DB_FILE);
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      let seed = { settings: {}, users: [], deposits: [], withdrawals: [], gift_codes: [] };
+      if (fs.existsSync(DB_SEED_FILE)) {
+        seed = JSON.parse(fs.readFileSync(DB_SEED_FILE, 'utf8'));
+      }
+      // Override secrets from Railway environment variables (set in Railway Dashboard > Variables)
+      if (process.env.ADMIN_USER)  seed.settings.admin_user  = process.env.ADMIN_USER;
+      if (process.env.ADMIN_PASS)  seed.settings.admin_pass  = process.env.ADMIN_PASS;
+      if (process.env.UPI_ID)      seed.settings.upi_id      = process.env.UPI_ID;
+      if (process.env.PAYEE_NAME)  seed.settings.payee_name  = process.env.PAYEE_NAME;
+      if (process.env.TG_SUPPORT)  seed.settings.telegram_support  = process.env.TG_SUPPORT;
+      if (process.env.TG_CHANNEL)  seed.settings.telegram_channel  = process.env.TG_CHANNEL;
+      fs.writeFileSync(DB_FILE, JSON.stringify(seed, null, 2), 'utf8');
+      console.log('✅ db.json initialized from seed template with env overrides.');
+    } catch (err) {
+      console.error('Error initializing db.json from seed:', err);
+    }
+  }
+}
+initDBFromSeedIfNeeded();
+
 function loadDB() {
   try {
     if (fs.existsSync(DB_FILE)) {
@@ -25,7 +54,7 @@ function loadDB() {
         data.gift_codes = [
           { id: 'GC_1', code: 'DMFIRSTVIP', bonus: 100, claimsUsed: 14, maxClaims: 500, status: 'Active', claimedBy: [], createdAt: '2026-10-28 10:00:00' },
           { id: 'GC_2', code: 'WELCOME50', bonus: 50, claimsUsed: 88, maxClaims: 1000, status: 'Active', claimedBy: [], createdAt: '2026-10-28 09:30:00' }
-        ];
+        ]
       }
       if (!data.settings) data.settings = {};
       if (!data.settings.payee_name) data.settings.payee_name = 'DmFirst Pay';
@@ -38,16 +67,16 @@ function loadDB() {
   }
   return {
     settings: {
-      telegram_support: "https://t.me/raxi_win_support",
-      telegram_channel: "https://t.me/raxi_official",
-      upi_id: "raxiwin@upi",
-      payee_name: "DmFirst Pay",
+      telegram_support: process.env.TG_SUPPORT || "https://t.me/raxi_win_support",
+      telegram_channel: process.env.TG_CHANNEL || "https://t.me/raxi_official",
+      upi_id: process.env.UPI_ID || "raxiwin@upi",
+      payee_name: process.env.PAYEE_NAME || "DmFirst Pay",
       qr_image: "/qr_upi.svg",
       qr_mode: "dynamic",
       min_deposit: 100,
       min_withdraw: 200,
-      admin_user: "admin",
-      admin_pass: "admin123",
+      admin_user: process.env.ADMIN_USER || "admin",
+      admin_pass: process.env.ADMIN_PASS || "admin123",
       maintenance_mode: false,
       announcement: "Welcome to RAXI.WIN! Instant UPI deposits & fast withdrawals enabled 24/7."
     },

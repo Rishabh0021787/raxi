@@ -1,0 +1,22 @@
+{
+  "settings": {
+    "telegram_support": "https://t.me/raxi_vip_support",
+    "telegram_channel": "https://t.me/raxi_official_channel",
+    "upi_id": "CHANGE_THIS@upi",
+    "min_deposit": 300,
+    "min_withdraw": 200,
+    "admin_user": "admin",
+    "admin_pass": "CHANGE_THIS_PASSWORD",
+    "maintenance_mode": false,
+    "announcement": "Welcome to RAXI.WIN! Instant UPI deposits & fast withdrawals enabled 24/7.",
+    "payee_name": "RaxiWin Official",
+    "qr_image": "/qr_upi.svg",
+    "qr_mode": "dynamic"
+  },
+  "users": [],
+  "deposits": [],
+  "withdrawals": [],
+  "gift_codes": [
+    { "id": "GC_1", "code": "WELCOME50", "bonus": 50, "claimsUsed": 0, "maxClaims": 1000, "status": "Active", "claimedBy": [], "createdAt": "2026-10-28 10:00:00" }
+  ]
+}

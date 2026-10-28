@@ -2,3 +2,7 @@ node_modules/
 .DS_Store
 Thumbs.db
 *.log
+
+# ─── SENSITIVE DATA ─────────────────────────────────────────────────────────
+# Never commit real user data, passwords, UPI IDs or balances to GitHub
+data/db.json
