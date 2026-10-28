@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Yaar Win - Authentication System Logic
  * Supports Login, Register, and Forgot Password
  * Roboto font family, Telegram Customer Support integration
@@ -935,33 +935,19 @@ function runStartLoadingScreen() {
 }
 
 function triggerMainPopupsSequence() {
-  // Only show the welcome bonus flow for fresh users with a pending bonus flag
-  const pending = localStorage.getItem('raxi_show_welcome_bonus_amount');
-  if (!pending) return; // no pending bonus, skip the sequence
-  try {
-    const u = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
-    if (!u) return;
-    const parsed = JSON.parse(u);
-    if (!parsed || (!parsed.uid && !parsed.identifier)) return;
-    // Open the welcome bonus modal; subsequent steps triggered by user actions
-    setTimeout(() => openModal('welcomeBonusModal'), 300);
-  } catch(e) { return; }
+  // All intro promotional popups removed — no action needed
 }
 
 function nextFromWelcomeBonus() {
-  // Skip the RAXI Agent popup — go directly to the Extra First Deposit popup
+  // welcomeBonusModal removed — legacy function kept for safety
   closeModal('welcomeBonusModal');
-  setTimeout(() => {
-    openModal('extraDepositModal');
-  }, 250);
+  closeModal('extraDepositModal');
 }
 
 function nextFromRaxiAgent() {
-  // Legacy function kept for safety (raxiAgentModal removed)
+  // raxiAgentModal removed — legacy function kept for safety
   closeModal('raxiAgentModal');
-  setTimeout(() => {
-    openModal('extraDepositModal');
-  }, 250);
+  closeModal('extraDepositModal');
 }
 
 function toggleNoMoreReminders() {
