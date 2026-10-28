@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -295,8 +295,8 @@
           <div class="reg-welcome-bonus-banner">
             <div class="reg-bonus-banner-icon">🎁</div>
             <div class="reg-bonus-banner-text">
-              <div class="reg-bonus-banner-headline">Welcome Bonus: ₹10 – ₹99 Free</div>
-              <div class="reg-bonus-banner-sub">Register now and claim an instant welcome bonus of ₹10 – ₹99 on your first registration!</div>
+              <div class="reg-bonus-banner-headline">Welcome Bonus: ₹81 – ₹99 Free</div>
+              <div class="reg-bonus-banner-sub">Register now and claim an instant welcome bonus of ₹81 – ₹99 on your first registration!</div>
             </div>
             <div class="reg-bonus-badge-glow">FREE CASH</div>
           </div>
@@ -2784,7 +2784,7 @@
             </button>
             <div style="margin-top: 10px; background: rgba(234,155,31,0.15); border: 1px dashed rgba(234,155,31,0.5); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
               <span style="font-size: 18px;">🎁</span>
-              <span style="font-size: 11.5px; color: #F5E5A0; font-weight: 600;">Every friend who joins using your link claims an instant ₹10 – ₹99 Welcome Bonus!</span>
+              <span style="font-size: 11.5px; color: #F5E5A0; font-weight: 600;">Every friend who joins using your link claims an instant ₹81 – ₹99 Welcome Bonus!</span>
             </div>
           </div>
 
@@ -3159,21 +3159,6 @@
         <button type="button" class="welcome-popup-action-btn" onclick="nextFromWelcomeBonus()">Confirm</button>
       </div>
       <button type="button" class="welcome-popup-close-circle" onclick="nextFromWelcomeBonus()" title="Close">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-      </button>
-    </div>
-  </div>
-
-  <!-- ================================================================== -->
-  <!-- 2. POPUP: Welcome to the RAXI AGENT                                -->
-  <!-- ================================================================== -->
-  <div id="raxiAgentModal" class="modal-overlay welcome-modal-overlay">
-    <div class="welcome-popup-container">
-      <div class="welcome-popup-card" onclick="nextFromRaxiAgent()">
-        <img src="popups/popup_raxi_agent.png" alt="Welcome to the RAXI AGENT" class="welcome-popup-img">
-        <button type="button" class="welcome-popup-action-btn" onclick="nextFromRaxiAgent()">Confirm</button>
-      </div>
-      <button type="button" class="welcome-popup-close-circle" onclick="nextFromRaxiAgent()" title="Close">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </button>
     </div>
@@ -3558,7 +3543,7 @@
         if (tabName === 'home') {
           if (typeof initHeroBannerSlider === 'function') initHeroBannerSlider();
           if (typeof initCategoryScrollSpy === 'function') initCategoryScrollSpy();
-          if (typeof checkAndShowWelcomeBonusModal === 'function') setTimeout(checkAndShowWelcomeBonusModal, 500);
+          // NOTE: Welcome bonus modal is shown only once right after registration — NOT here
         }
       });
     }
@@ -4818,7 +4803,7 @@
     }
 
     // ==========================================
-    // WELCOME BONUS POPUP CONTROLLER (₹10 – ₹99)
+    // WELCOME BONUS POPUP CONTROLLER (₹81 – ₹99)
     // ==========================================
     window.checkAndShowWelcomeBonusModal = function() {
       try {
@@ -4954,7 +4939,7 @@
   </div>
 
   <!-- ================================================================== -->
-  <!-- NEW USER REGISTRATION BONUS POPUP MODAL (₹10 - ₹99)               -->
+  <!-- NEW USER REGISTRATION BONUS POPUP MODAL (₹81 – ₹99)               -->
   <!-- ================================================================== -->
   <div id="welcomeBonusModal" class="welcome-bonus-modal-overlay" style="display: none;">
     <div class="welcome-bonus-card">
@@ -4975,7 +4960,7 @@
         <div class="bonus-box-val">
           <span class="bonus-currency">₹</span><span id="welcomeBonusAmountDisplay">0.00</span>
         </div>
-        <div class="bonus-box-hint">Random Reward (₹10 – ₹99) Credited to Wallet</div>
+        <div class="bonus-box-hint">Random Reward (₹81 – ₹99) Credited to Wallet</div>
       </div>
 
       <button type="button" class="welcome-bonus-claim-btn" id="claimBonusActionBtn" onclick="claimWelcomeBonusAction()">

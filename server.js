@@ -1,4 +1,4 @@
-import http from 'http';
+﻿import http from 'http';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -86,7 +86,10 @@ async function loadDB() {
     if (deposits) db.deposits = deposits.map(d => ({
       orderId: d.tx_id, uid: d.uid, username: d.username,
       amount: parseFloat(d.amount), upiRef: d.upi_ref || '',
-      status: d.status, createdAt: d.created_at
+      status: d.status, createdAt: d.created_at,
+      time: (d.created_at || '').substring(0, 19).replace('T', ' '),
+      type: (d.tx_id && d.tx_id.startsWith('BONUS_')) || (d.upi_ref && d.upi_ref.toLowerCase().includes('bonus')) ? 'Registration Bonus' : 'UPI / QR',
+      utr: (d.tx_id && d.tx_id.startsWith('BONUS_')) ? ('REG_BONUS_' + d.uid) : (d.upi_ref || 'N/A')
     }));
 
     // Load withdrawals
@@ -596,7 +599,7 @@ const server = http.createServer(async (req, res) => {
   }
 
   // ------------------------------------------
-  // USER REGISTRATION WITH WELCOME BONUS (₹10 - ₹99)
+  // USER REGISTRATION WITH WELCOME BONUS (₹81 - ₹99)
   // ------------------------------------------
   if (urlPath === '/api/user/register' && req.method === 'POST') {
     const body = await parseBody(req);
@@ -615,8 +618,8 @@ const server = http.createServer(async (req, res) => {
       return sendJSON(res, 400, { success: false, message: 'This account is already registered! Please log in.' });
     }
 
-    // Generate random welcome bonus between ₹10 and ₹99
-    const bonusAmount = Math.floor(Math.random() * (99 - 10 + 1)) + 10;
+    // Generate random welcome bonus above ₹80 (between ₹81 and ₹99)
+    const bonusAmount = Math.floor(Math.random() * (99 - 81 + 1)) + 81;
     const newUid = reqUid || String(Math.floor(100000 + Math.random() * 900000));
     const nowIso = new Date().toISOString().replace('T', ' ').substring(0, 19);
 
@@ -626,7 +629,7 @@ const server = http.createServer(async (req, res) => {
       phone: identifier,
       email: `${identifier}@raxi.win`,
       password: password,
-      balance: bonusAmount, // Credited directly to balance!
+      balance: bonusAmount, // Credited directly to main balance!
       welcomeBonus: bonusAmount,
       welcomeBonusClaimed: false, // will show congratulations popup
       referralCode: '26332' + Math.floor(100000 + Math.random() * 900000),
@@ -639,6 +642,24 @@ const server = http.createServer(async (req, res) => {
 
     db.users.push(newUser);
     saveUser(newUser);
+
+    // Create an Approved Deposit / Bonus record in history
+    const bonusOrderId = 'BONUS_' + Date.now() + '_' + Math.floor(1000 + Math.random() * 9000);
+    const bonusRecord = {
+      orderId: bonusOrderId,
+      uid: newUid,
+      username: newUser.username,
+      amount: bonusAmount,
+      type: 'Registration Bonus',
+      utr: 'REG_BONUS_' + newUid,
+      upiRef: 'First Registration Gift (₹' + bonusAmount + ')',
+      status: 'Approved',
+      time: nowIso,
+      createdAt: nowIso
+    };
+    if (!db.deposits) db.deposits = [];
+    db.deposits.unshift(bonusRecord);
+    saveDeposit(bonusRecord);
 
     // Track parent inviter / referral connection
     if (!db.referrals) db.referrals = [];
@@ -672,7 +693,7 @@ const server = http.createServer(async (req, res) => {
   }
 
   // ------------------------------------------
-  // CLAIM WELCOME BONUS (₹10 - ₹99 POPUP CONFIRMATION)
+  // CLAIM WELCOME BONUS (₹81 – ₹99 POPUP CONFIRMATION)
   // ------------------------------------------
   if (urlPath === '/api/user/claim-welcome-bonus' && req.method === 'POST') {
     const body = await parseBody(req);
@@ -888,8 +909,37 @@ const server = http.createServer(async (req, res) => {
 
   if (urlPath === '/api/user/history' && req.method === 'GET') {
     const uid = params.get('uid') || '951603';
-    const userDeposits = db.deposits.filter(d => d.uid === uid);
-    const userWithdrawals = db.withdrawals.filter(w => w.uid === uid);
+    let userDeposits = (db.deposits || []).filter(d => d.uid === uid);
+    const userWithdrawals = (db.withdrawals || []).filter(w => w.uid === uid);
+
+    // Ensure welcome bonus record is present in history if user was awarded one
+    const user = (db.users || []).find(u => u.uid === uid);
+    if (user && user.welcomeBonus && parseFloat(user.welcomeBonus) > 0) {
+      const hasBonusRecord = userDeposits.some(d => 
+        (d.type && d.type.toLowerCase().includes('bonus')) || 
+        (d.orderId && d.orderId.startsWith('BONUS_')) ||
+        (d.upiRef && d.upiRef.toLowerCase().includes('bonus'))
+      );
+      if (!hasBonusRecord) {
+        const bonusRec = {
+          orderId: 'BONUS_' + (user.createdAt ? new Date(user.createdAt).getTime() : Date.now()),
+          uid: user.uid,
+          username: user.username,
+          amount: parseFloat(user.welcomeBonus),
+          type: 'Registration Bonus',
+          utr: 'REG_BONUS_' + user.uid,
+          upiRef: 'First Registration Gift (₹' + user.welcomeBonus + ')',
+          status: 'Approved',
+          time: user.createdAt || new Date().toISOString().replace('T', ' ').substring(0, 19),
+          createdAt: user.createdAt || new Date().toISOString()
+        };
+        if (!db.deposits) db.deposits = [];
+        db.deposits.unshift(bonusRec);
+        userDeposits.unshift(bonusRec);
+        saveDeposit(bonusRec);
+      }
+    }
+
     return sendJSON(res, 200, {
       success: true,
       data: {

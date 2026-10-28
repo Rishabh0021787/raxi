@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Yaar Win - Authentication System Logic
  * Supports Login, Register, and Forgot Password
  * Roboto font family, Telegram Customer Support integration
@@ -464,8 +464,8 @@ async function handleRegister(e) {
     return;
   }
 
-  // Generate random welcome bonus between ₹10 and ₹99
-  const expectedBonus = Math.floor(Math.random() * (99 - 10 + 1)) + 10;
+  // Generate random welcome bonus above ₹80 (between ₹81 and ₹99)
+  const expectedBonus = Math.floor(Math.random() * (99 - 81 + 1)) + 81;
   const newUid = String(Math.floor(100000 + Math.random() * 900000));
   const effectiveInviteCode = inviteCode || localStorage.getItem('raxi_referral_preset_code') || '';
 
@@ -935,31 +935,29 @@ function runStartLoadingScreen() {
 }
 
 function triggerMainPopupsSequence() {
-  // Only trigger promotional popups if user is authenticated
+  // Only show the welcome bonus flow for fresh users with a pending bonus flag
+  const pending = localStorage.getItem('raxi_show_welcome_bonus_amount');
+  if (!pending) return; // no pending bonus, skip the sequence
   try {
     const u = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
     if (!u) return;
     const parsed = JSON.parse(u);
     if (!parsed || (!parsed.uid && !parsed.identifier)) return;
+    // Open the welcome bonus modal; subsequent steps triggered by user actions
+    setTimeout(() => openModal('welcomeBonusModal'), 300);
   } catch(e) { return; }
-
-  const noReminder = localStorage.getItem('no_reminder_date');
-  const today = new Date().toDateString();
-  if (noReminder === today) return;
-
-  setTimeout(() => {
-    openModal('welcomeBonusModal');
-  }, 300);
 }
 
 function nextFromWelcomeBonus() {
+  // Skip the RAXI Agent popup — go directly to the Extra First Deposit popup
   closeModal('welcomeBonusModal');
   setTimeout(() => {
-    openModal('raxiAgentModal');
+    openModal('extraDepositModal');
   }, 250);
 }
 
 function nextFromRaxiAgent() {
+  // Legacy function kept for safety (raxiAgentModal removed)
   closeModal('raxiAgentModal');
   setTimeout(() => {
     openModal('extraDepositModal');
