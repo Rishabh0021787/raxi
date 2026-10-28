@@ -10,6 +10,7 @@ const __dirname = path.dirname(__filename);
 
 const PORT = parseInt(process.env.PORT || '3005', 10);
 const HOST = '0.0.0.0';
+const ADMIN_SECRET_PATH = process.env.ADMIN_PATH || '/raxi-portal-7729';
 
 // ============================================================
 // 1. SUPABASE CLIENT
@@ -1244,25 +1245,32 @@ const server = http.createServer(async (req, res) => {
   // ==========================================
   let reqPath = urlPath;
 
-  // Standalone game admin routing
-  if (reqPath === '/games/wingo-game/admin' || reqPath === '/games/wingo-game/admin/') {
-    reqPath = '/games/wingo-game/admin.html';
-  }
-  if (reqPath === '/games/aviator-game/admin' || reqPath === '/games/aviator-game/admin/') {
-    reqPath = '/games/aviator-game/admin/index.html';
+  // Block any public attempt to access standard admin URLs directly
+  if (reqPath === '/admin' || reqPath === '/admin/' || reqPath === '/admin.html' || 
+      reqPath === '/games/wingo-game/admin' || reqPath === '/games/wingo-game/admin/' || reqPath === '/games/wingo-game/admin.html' ||
+      reqPath === '/games/aviator-game/admin' || reqPath === '/games/aviator-game/admin/') {
+    const errorPage = path.join(__dirname, '404.html');
+    res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
+    if (fs.existsSync(errorPage)) {
+      return res.end(fs.readFileSync(errorPage));
+    }
+    return res.end('404 Access Restricted');
   }
 
-  if (reqPath === '/' || reqPath === '') {
-    reqPath = '/index.html';
-  } else if (reqPath === '/admin' || reqPath === '/admin/') {
+  // Secret Admin Portal route
+  if (reqPath === ADMIN_SECRET_PATH || reqPath === (ADMIN_SECRET_PATH + '/')) {
     reqPath = '/admin.html';
+  } else if (reqPath === '/' || reqPath === '') {
+    reqPath = '/index.html';
   }
 
   try {
     reqPath = decodeURIComponent(reqPath);
   } catch (e) {}
 
-  let filePath = path.join(__dirname, reqPath);
+  // Guard against path manipulation / directory traversal
+  const safePath = path.normalize(reqPath).replace(/^(\.\.[\/\\])+/, '');
+  let filePath = path.join(__dirname, safePath);
 
   // If request is a directory, serve its index.html
   try {
@@ -1277,7 +1285,11 @@ const server = http.createServer(async (req, res) => {
   fs.readFile(filePath, (err, content) => {
     if (err) {
       if (err.code === 'ENOENT') {
-        res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+        const errorPage = path.join(__dirname, '404.html');
+        res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
+        if (fs.existsSync(errorPage)) {
+          return res.end(fs.readFileSync(errorPage));
+        }
         res.end('404 Not Found');
       } else {
         res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
@@ -1353,7 +1365,7 @@ wss.on('connection', (ws) => {
 loadDB().then(() => {
   server.listen(PORT, HOST, () => {
     console.log(`Yaar Win Platform & Admin Server running at http://localhost:${PORT}/`);
-    console.log(`Admin Panel available at http://localhost:${PORT}/admin`);
+    console.log(`Secret Admin Portal available at http://localhost:${PORT}${ADMIN_SECRET_PATH}`);
     console.log(`Supabase connected: ${SUPABASE_URL}`);
   });
 }).catch(err => {

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>404 - Access Restricted | RAXI .WIN</title>
+  <link rel="icon" href="/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #2C0001;
+      --bg-secondary: #3E1919;
+      --bg-panel: #552122;
+      --accent-red: #FA484C;
+      --accent-red-dark: #9D1322;
+      --accent-red-bright: #E52539;
+      --accent-gold: #EA9B1F;
+      --accent-gold-light: #F5E5A0;
+      --text-primary: #FFFFFF;
+      --text-secondary: #D09B9B;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at center top, #480f11 0%, #200001 70%, #120001 100%);
+      font-family: 'Roboto', sans-serif;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Ambient background grid */
+    body::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(250, 72, 76, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(250, 72, 76, 0.05) 1px, transparent 1px);
+      background-size: 32px 32px;
+      pointer-events: none;
+    }
+
+    .error-card {
+      position: relative;
+      width: 100%;
+      max-width: 440px;
+      background: linear-gradient(180deg, #3E1919 0%, #2A0a0b 100%);
+      border: 1px solid rgba(250, 72, 76, 0.35);
+      box-shadow: 
+        0 12px 40px rgba(0, 0, 0, 0.65),
+        0 0 35px rgba(229, 37, 57, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 36px 24px 30px;
+      text-align: center;
+      z-index: 2;
+      backdrop-filter: blur(10px);
+      animation: cardFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes cardFadeIn {
+      from { opacity: 0; transform: scale(0.94) translateY(12px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .brand-header {
+      margin-bottom: 22px;
+    }
+
+    .brand-logo {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 16px rgba(234, 155, 31, 0.45));
+      animation: logoFloat 3s ease-in-out infinite;
+    }
+
+    @keyframes logoFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    .error-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 72px;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -2px;
+      background: linear-gradient(180deg, #FFFFFF 20%, #FA484C 70%, #9D1322 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+      position: relative;
+      text-shadow: 0 0 24px rgba(250, 72, 76, 0.4);
+    }
+
+    .shield-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 14px;
+      background: rgba(229, 37, 57, 0.14);
+      border: 1px solid rgba(250, 72, 76, 0.4);
+      border-radius: 30px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #FF7B80;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .shield-badge svg {
+      width: 14px;
+      height: 14px;
+      fill: #FA484C;
+    }
+
+    .error-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 10px;
+      letter-spacing: -0.3px;
+    }
+
+    .error-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      margin-bottom: 26px;
+      padding: 0 10px;
+    }
+
+    .error-desc strong {
+      color: #FFFFFF;
+    }
+
+    .cta-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      height: 48px;
+      background: linear-gradient(135deg, #E52539 0%, #9D1322 100%);
+      color: #FFFFFF;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(229, 37, 57, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .cta-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(229, 37, 57, 0.6);
+      filter: brightness(1.1);
+    }
+
+    .cta-btn:active {
+      transform: translateY(1px);
+    }
+
+    .cta-btn svg {
+      width: 18px;
+      height: 18px;
+      stroke: #FFFFFF;
+      stroke-width: 2.5;
+      fill: none;
+    }
+
+    .footer-support {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #9F6B6B;
+    }
+
+    .footer-support a {
+      color: var(--accent-gold);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+
+    .footer-support a:hover {
+      color: var(--accent-gold-light);
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="error-card">
+    <div class="brand-header">
+      <img src="/logo.png" alt="RAXI.WIN" class="brand-logo" onerror="this.src='/avatar.png'">
+    </div>
+
+    <div class="error-code">404</div>
+
+    <div class="shield-badge">
+      <svg viewBox="0 0 24 24"><path d="M12 2L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-3zm0 18c-3.75-1-6.5-4.85-6.5-9V6.3l6.5-2.17 6.5 2.17V11c0 4.15-2.75 8-6.5 9z"/></svg>
+      <span>Security Protocol Active</span>
+    </div>
+
+    <h1 class="error-title">Route Access Restricted</h1>
+
+    <p class="error-desc">
+      The requested resource was moved, invalid, or access is protected by platform firewall. 
+      <strong>All connection attempts are strictly logged.</strong>
+    </p>
+
+    <a href="/" class="cta-btn">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Return to Gaming Lobby</span>
+    </a>
+
+    <div class="footer-support">
+      Need assistance? Contact <a href="https://t.me/raxi_vip_support" target="_blank" rel="noopener">Official Support</a>
+    </div>
+  </div>
+
+</body>
+</html>
