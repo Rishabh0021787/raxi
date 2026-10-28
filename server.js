@@ -595,6 +595,165 @@ const server = http.createServer(async (req, res) => {
     return sendJSON(res, 200, { success: true, data: userData });
   }
 
+  // ------------------------------------------
+  // USER REGISTRATION WITH WELCOME BONUS (₹10 - ₹99)
+  // ------------------------------------------
+  if (urlPath === '/api/user/register' && req.method === 'POST') {
+    const body = await parseBody(req);
+    const identifier = (body.identifier || '').trim();
+    const password = (body.password || '').trim();
+    const inviteCode = (body.inviteCode || '').trim();
+    const reqUid = (body.uid || '').trim();
+
+    if (!identifier) {
+      return sendJSON(res, 400, { success: false, message: 'Phone number or identifier is required' });
+    }
+
+    // Check if identifier already registered
+    const existing = db.users.find(u => u.phone === identifier || u.username === identifier || (reqUid && u.uid === reqUid));
+    if (existing) {
+      return sendJSON(res, 400, { success: false, message: 'This account is already registered! Please log in.' });
+    }
+
+    // Generate random welcome bonus between ₹10 and ₹99
+    const bonusAmount = Math.floor(Math.random() * (99 - 10 + 1)) + 10;
+    const newUid = reqUid || String(Math.floor(100000 + Math.random() * 900000));
+    const nowIso = new Date().toISOString().replace('T', ' ').substring(0, 19);
+
+    const newUser = {
+      uid: newUid,
+      username: 'MEMBER' + newUid,
+      phone: identifier,
+      email: `${identifier}@raxi.win`,
+      password: password,
+      balance: bonusAmount, // Credited directly to balance!
+      welcomeBonus: bonusAmount,
+      welcomeBonusClaimed: false, // will show congratulations popup
+      referralCode: '26332' + Math.floor(100000 + Math.random() * 900000),
+      referredBy: inviteCode || '',
+      vip: 'VIP0',
+      status: 'Active',
+      createdAt: nowIso,
+      lastLogin: nowIso
+    };
+
+    db.users.push(newUser);
+    saveUser(newUser);
+
+    // Track parent inviter / referral connection
+    if (!db.referrals) db.referrals = [];
+    if (inviteCode) {
+      const parentUser = db.users.find(u => u.referralCode === inviteCode || u.uid === inviteCode);
+      const referralRecord = {
+        id: 'REF_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+        inviterCode: inviteCode,
+        inviterUid: parentUser ? parentUser.uid : null,
+        invitedUid: newUid,
+        invitedIdentifier: identifier.length >= 7 ? identifier.substring(0, 3) + '****' + identifier.substring(identifier.length - 3) : identifier,
+        bonusGiven: bonusAmount,
+        createdAt: nowIso
+      };
+      db.referrals.push(referralRecord);
+    }
+    saveDB();
+
+    return sendJSON(res, 200, {
+      success: true,
+      message: 'Registration successful! Welcome bonus awarded.',
+      data: {
+        uid: newUid,
+        identifier: identifier,
+        bonusAmount: bonusAmount,
+        balance: newUser.balance,
+        inviteCode: newUser.referralCode,
+        referredBy: newUser.referredBy
+      }
+    });
+  }
+
+  // ------------------------------------------
+  // CLAIM WELCOME BONUS (₹10 - ₹99 POPUP CONFIRMATION)
+  // ------------------------------------------
+  if (urlPath === '/api/user/claim-welcome-bonus' && req.method === 'POST') {
+    const body = await parseBody(req);
+    const uid = body.uid || '951603';
+    const user = db.users.find(u => u.uid === uid);
+    if (!user) return sendJSON(res, 404, { success: false, message: 'User not found' });
+
+    user.welcomeBonusClaimed = true;
+    saveUser(user);
+    saveDB();
+
+    return sendJSON(res, 200, {
+      success: true,
+      message: `Welcome bonus of ₹${(user.welcomeBonus || 0).toFixed(2)} claimed successfully!`,
+      data: {
+        balance: user.balance,
+        bonus: user.welcomeBonus || 0
+      }
+    });
+  }
+
+  // ------------------------------------------
+  // GET INVITED MEMBERS LIST FOR PARENT INVITER
+  // ------------------------------------------
+  if (urlPath === '/api/user/invites' && req.method === 'GET') {
+    const code = params.get('code') || '';
+    const uid = params.get('uid') || '';
+
+    if (!db.referrals) db.referrals = [];
+
+    // Find all users invited via this code or uid
+    const matchedReferrals = db.referrals.filter(r => 
+      (code && r.inviterCode === code) || 
+      (uid && r.inviterUid === uid) ||
+      (uid && r.inviterCode === uid)
+    );
+
+    // Also scan db.users for any users with referredBy === code or referredBy === uid
+    const matchedUsers = db.users.filter(u => 
+      (code && u.referredBy === code) || 
+      (uid && u.referredBy === uid)
+    );
+
+    // Merge and deduplicate by invited UID
+    const inviteesMap = new Map();
+
+    matchedReferrals.forEach(r => {
+      inviteesMap.set(r.invitedUid, {
+        uid: r.invitedUid,
+        identifier: r.invitedIdentifier || ('UID ' + r.invitedUid),
+        bonusGiven: r.bonusGiven || 50,
+        joinedAt: r.createdAt || 'Recent',
+        status: 'Active'
+      });
+    });
+
+    matchedUsers.forEach(u => {
+      if (!inviteesMap.has(u.uid)) {
+        const phone = u.phone || u.identifier || u.username || ('UID ' + u.uid);
+        const masked = phone.length >= 7 ? phone.substring(0, 3) + '****' + phone.substring(phone.length - 3) : phone;
+        inviteesMap.set(u.uid, {
+          uid: u.uid,
+          identifier: masked,
+          bonusGiven: u.welcomeBonus || 50,
+          joinedAt: u.createdAt || 'Recent',
+          status: 'Active'
+        });
+      }
+    });
+
+    const inviteesList = Array.from(inviteesMap.values());
+    const totalCommission = (inviteesList.length * 15.5).toFixed(2);
+
+    return sendJSON(res, 200, {
+      success: true,
+      totalInvited: inviteesList.length,
+      totalCommission: totalCommission,
+      data: inviteesList
+    });
+  }
+
   // Claim First Deposit Extra Bonus Tier
   if (urlPath === '/api/user/claim-deposit-bonus' && req.method === 'POST') {
     const body = await parseBody(req);

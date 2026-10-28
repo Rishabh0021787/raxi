@@ -412,7 +412,7 @@ function handleLogin(e) {
   }, 400);
 }
 
-function handleRegister(e) {
+async function handleRegister(e) {
   e.preventDefault();
   const identifierInput = document.getElementById('registerIdentifier');
   const passwordInput = document.getElementById('registerPassword');
@@ -464,18 +464,43 @@ function handleRegister(e) {
     return;
   }
 
-  // Generate unique 6-digit UID
+  // Generate random welcome bonus between ₹10 and ₹99
+  const expectedBonus = Math.floor(Math.random() * (99 - 10 + 1)) + 10;
   const newUid = String(Math.floor(100000 + Math.random() * 900000));
+  const effectiveInviteCode = inviteCode || localStorage.getItem('raxi_referral_preset_code') || '';
 
-  // Create new user starting with STRICTLY 0 balance
+  let awardedBonus = expectedBonus;
+
+  try {
+    const regRes = await fetch('/api/user/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        uid: newUid,
+        identifier,
+        password,
+        inviteCode: effectiveInviteCode,
+        bonusAmount: expectedBonus
+      })
+    });
+    const regData = await regRes.json();
+    if (regData.success && regData.data && regData.data.bonusAmount) {
+      awardedBonus = regData.data.bonusAmount;
+    }
+  } catch (err) {
+    console.warn('Server registration offline/fallback:', err);
+  }
+
+  // Create new user with awarded bonus
   const newUser = {
     uid: newUid,
     identifier,
     type: state.registerTab,
     countryCode: state.currentCountry.code,
     password,
-    balance: 0.00, // New user strictly starts from 0
-    inviteCode: inviteCode || '287520774542',
+    balance: awardedBonus,
+    welcomeBonus: awardedBonus,
+    inviteCode: effectiveInviteCode || '287520774542',
     createdAt: new Date().toISOString()
   };
 
@@ -483,17 +508,22 @@ function handleRegister(e) {
   localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(newUser));
   localStorage.setItem('raxi_active_uid', newUid);
 
-  // Register on server with 0.00 balance
-  fetch(`/api/user/info?uid=${newUid}`).catch(() => {});
+  // Set flag to trigger congratulations bonus popup for fresh new user only
+  localStorage.setItem('raxi_show_welcome_bonus_amount', String(awardedBonus));
 
-  showToast('Registration successful! Welcome to RAXI.WIN!', 'success');
+  showToast(`Registration successful! Welcome bonus ₹${awardedBonus} unlocked!`, 'success');
 
-  // Immediately take user to home page with ₹0.00 starting balance
+  // Immediately take user to home page and trigger bonus popup
   setTimeout(() => {
     if (typeof switchMainTab === 'function') {
       switchMainTab('home');
+      if (typeof checkAndShowWelcomeBonusModal === 'function') {
+        checkAndShowWelcomeBonusModal();
+      }
+    } else {
+      window.location.href = 'index.html#home';
     }
-  }, 500);
+  }, 400);
 }
 
 function handleResetPassword(e) {

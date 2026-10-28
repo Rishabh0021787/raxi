@@ -5842,4 +5842,294 @@ body {
   height: 16px;
 }
 
+/* ==========================================================================
+   FIRST REGISTRATION WELCOME BONUS BANNER (₹10 – ₹99)
+   ========================================================================== */
+.reg-welcome-bonus-banner {
+  background: linear-gradient(135deg, #552122 0%, #3E1919 50%, #2C0001 100%);
+  border: 1px solid rgba(234, 155, 31, 0.5);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 18px rgba(250, 72, 76, 0.25);
+}
+
+.reg-welcome-bonus-banner::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle, rgba(234, 155, 31, 0.25) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.reg-bonus-banner-icon {
+  font-size: 28px;
+  filter: drop-shadow(0 2px 8px rgba(234, 155, 31, 0.5));
+  flex-shrink: 0;
+}
+
+.reg-bonus-banner-text {
+  flex: 1;
+}
+
+.reg-bonus-banner-headline {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #F5E5A0;
+  letter-spacing: 0.3px;
+  margin-bottom: 2px;
+}
+
+.reg-bonus-banner-sub {
+  font-size: 11px;
+  color: #fca5a5;
+  line-height: 1.4;
+}
+
+.reg-bonus-badge-glow {
+  background: linear-gradient(135deg, #FA484C, #9D1322);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 4px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.8px;
+  box-shadow: 0 2px 8px rgba(250, 72, 76, 0.4);
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   CONGRATULATIONS WELCOME BONUS POPUP SCREEN
+   ========================================================================== */
+.welcome-bonus-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.welcome-bonus-card {
+  background: linear-gradient(145deg, #3E1919 0%, #2C0001 60%, #1a0001 100%);
+  border: 1.5px solid rgba(234, 155, 31, 0.6);
+  border-radius: 20px;
+  padding: 28px 22px 24px;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(250, 72, 76, 0.3);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.welcome-bonus-header-icon {
+  position: relative;
+  width: 84px;
+  height: 84px;
+  margin: 0 auto 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bonus-gift-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #552122 0%, #2C0001 100%);
+  border: 2px solid #EA9B1F;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 25px rgba(234, 155, 31, 0.5);
+  animation: pulseGlow 2s infinite alternate;
+}
+
+@keyframes pulseGlow {
+  0% { transform: scale(1); box-shadow: 0 0 15px rgba(234, 155, 31, 0.4); }
+  100% { transform: scale(1.06); box-shadow: 0 0 30px rgba(250, 72, 76, 0.7); }
+}
+
+.bonus-sparkle {
+  position: absolute;
+  font-size: 18px;
+  pointer-events: none;
+}
+.bonus-sparkle.sp-1 { top: -4px; left: -2px; animation: floatSparkle 2s infinite ease-in-out; }
+.bonus-sparkle.sp-2 { top: 6px; right: -4px; animation: floatSparkle 2.2s infinite ease-in-out 0.3s; }
+.bonus-sparkle.sp-3 { bottom: 0px; left: -8px; font-size: 20px; animation: floatSparkle 2.5s infinite ease-in-out 0.6s; }
+
+@keyframes floatSparkle {
+  0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+  50% { transform: translateY(-8px) rotate(15deg); opacity: 1; }
+}
+
+.welcome-bonus-title {
+  font-size: 22px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #FFFFFF 0%, #F5E5A0 50%, #EA9B1F 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.welcome-bonus-subtitle {
+  font-size: 12.5px;
+  color: #D09B9B;
+  line-height: 1.5;
+  margin-bottom: 18px;
+  padding: 0 8px;
+}
+
+.welcome-bonus-amount-box {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(234, 155, 31, 0.4);
+  border-radius: 14px;
+  padding: 16px 12px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.bonus-box-tag {
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #EA9B1F;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.bonus-box-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 38px;
+  font-weight: 900;
+  color: #55E6A5;
+  text-shadow: 0 0 20px rgba(85, 230, 165, 0.4);
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+
+.bonus-currency {
+  font-size: 26px;
+  margin-right: 2px;
+  color: #F5E5A0;
+}
+
+.bonus-box-hint {
+  font-size: 11px;
+  color: #D09B9B;
+}
+
+.welcome-bonus-claim-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #FA484C 0%, #D81A24 100%);
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 6px 20px rgba(250, 72, 76, 0.5);
+  transition: all 0.2s ease;
+}
+
+.welcome-bonus-claim-btn:active {
+  transform: scale(0.98);
+}
+
+.welcome-bonus-footer-note {
+  font-size: 11px;
+  color: #a37578;
+  margin-top: 14px;
+  line-height: 1.4;
+}
+
+/* Invited member rows in promotion view */
+.invited-member-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(250, 72, 76, 0.15);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+
+.invited-member-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.invited-avatar-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FA484C, #9D1322);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.invited-details-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.invited-name-txt {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.invited-date-txt {
+  font-size: 10.5px;
+  color: #D09B9B;
+}
+
+.invited-member-right {
+  text-align: right;
+}
+
+.invited-bonus-badge {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #9FD063;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.invited-status-tag {
+  font-size: 10px;
+  color: #EA9B1F;
+}
+
 
