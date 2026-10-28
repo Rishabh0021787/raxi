@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AviatorX Admin Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0b0f;
+      --bg-card: #12141c;
+      --bg-card2: #191b25;
+      --border: #1f2232;
+      --accent: #e51b24;
+      --accent2: #f59e0b;
+      --green: #22c55e;
+      --blue: #3b82f6;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --font: 'Roboto', sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      min-height: 100vh;
+    }
+
+    /* ── LOGIN SCREEN ─────────────────────────── */
+    #loginScreen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(ellipse at center, #13141c 0%, #0a0b0f 100%);
+    }
+    .login-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+    .login-logo {
+      font-size: 32px;
+      font-weight: 900;
+      font-style: italic;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .login-subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 28px;
+    }
+    .form-group {
+      margin-bottom: 16px;
+      text-align: left;
+    }
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .form-group input {
+      width: 100%;
+      background: #0d0e14;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus {
+      border-color: var(--accent);
+    }
+    .login-btn {
+      width: 100%;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: var(--font);
+      cursor: pointer;
+      margin-top: 8px;
+      transition: filter 0.2s;
+    }
+    .login-btn:hover { filter: brightness(1.1); }
+    .login-error {
+      color: var(--accent);
+      font-size: 13px;
+      margin-top: 12px;
+      display: none;
+    }
+
+    /* ── ADMIN PANEL ─────────────────────────── */
+    #adminPanel { display: none; }
+
+    .topbar {
+      background: #0d0e14;
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .topbar-logo {
+      font-size: 22px;
+      font-weight: 900;
+      font-style: italic;
+      color: var(--accent);
+    }
+    .topbar-badge {
+      background: #1a1c28;
+      border: 1px solid #2a2d42;
+      border-radius: 6px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent2);
+      text-transform: uppercase;
+    }
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+      display: inline-block;
+    }
+    .logout-btn {
+      background: #1e2030;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-family: var(--font);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .logout-btn:hover { color: #fff; }
+
+    .admin-body {
+      padding: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 22px;
+    }
+    .card-full { grid-column: 1 / -1; }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--muted);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-title-icon { font-size: 16px; }
+
+    /* Status cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .stat-box {
+      background: var(--bg-card2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .stat-label {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .stat-value {
+      font-size: 24px;
+      font-weight: 900;
+      margin-top: 4px;
+    }
+    .stat-value.green { color: var(--green); }
+    .stat-value.red { color: var(--accent); }
+    .stat-value.blue { color: var(--blue); }
+    .stat-value.gold { color: var(--accent2); }
+
+    /* Outcome Override Card */
+    .outcome-form {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .outcome-description {
+      font-size: 13px;
+      color: #94a3b8;
+      line-height: 1.6;
+      background: #0f1018;
+      border: 1px solid #1a1c28;
+      border-radius: 8px;
+      padding: 10px 14px;
+    }
+    .outcome-description strong { color: var(--accent2); }
+
+    .outcome-presets {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .preset-btn {
+      background: #1a1c28;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 700;
+      padding: 10px 0;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .preset-btn:hover {
+      background: #252838;
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .preset-btn.crash { color: var(--accent); border-color: rgba(229,27,36,0.35); }
+    .preset-btn.mid   { color: var(--accent2); border-color: rgba(245,158,11,0.35); }
+    .preset-btn.big   { color: var(--blue); border-color: rgba(59,130,246,0.35); }
+    .preset-btn.huge  { color: #a855f7; border-color: rgba(168,85,247,0.35); }
+
+    .custom-mult-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .mult-input {
+      flex: 1;
+      background: #0d0e14;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: #fff;
+      font-family: var(--font);
+      font-size: 18px;
+      font-weight: 700;
+      outline: none;
+    }
+    .mult-input:focus { border-color: var(--accent); }
+    .mult-unit {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--muted);
+      width: 24px;
+    }
+
+    .action-btn {
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+    }
+    .btn-set { background: var(--accent); color: #fff; flex: 2; }
+    .btn-set:hover { filter: brightness(1.1); }
+    .btn-clear { background: #1e2030; border: 1px solid var(--border); color: var(--muted); flex: 1; }
+    .btn-clear:hover { color: #fff; }
+
+    .override-status {
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      display: none;
+    }
+    .override-status.active {
+      display: block;
+      background: rgba(229,27,36,0.12);
+      border: 1px solid rgba(229,27,36,0.3);
+      color: #fca5a5;
+    }
+    .override-status.cleared {
+      display: block;
+      background: rgba(34,197,94,0.1);
+      border: 1px solid rgba(34,197,94,0.3);
+      color: #86efac;
+    }
+
+    /* Users Table */
+    .users-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .users-table thead tr {
+      background: #0d0e14;
+    }
+    .users-table th {
+      padding: 8px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--muted);
+      letter-spacing: 0.4px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .users-table td {
+      padding: 10px 12px;
+      font-size: 13px;
+      border-bottom: 1px solid #141620;
+    }
+    .users-table tr:hover td { background: #13151f; }
+    .user-bal-val { font-weight: 700; color: var(--green); }
+    .no-users {
+      text-align: center;
+      padding: 30px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .set-bal-form {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .set-bal-input {
+      width: 90px;
+      background: #0d0e14;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 5px 8px;
+      color: #fff;
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 700;
+      outline: none;
+    }
+    .set-bal-btn {
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font);
+    }
+
+    /* Integration code block */
+    .code-block {
+      background: #07080c;
+      border: 1px solid #1a1c28;
+      border-radius: 10px;
+      padding: 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      color: #a3e635;
+      white-space: pre-wrap;
+      word-break: break-all;
+      margin-bottom: 14px;
+      position: relative;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: #1e2030;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 11px;
+      cursor: pointer;
+      font-family: var(--font);
+    }
+    .copy-btn:hover { color: #fff; }
+    .code-comment { color: #6b7280; }
+    .code-key { color: #38bdf8; }
+    .code-val { color: #a3e635; }
+    .code-str { color: #f9a8d4; }
+
+    .tab-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+    .tab-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--muted);
+      font-family: var(--font);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 14px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .tab-btn.active {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #fff;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1e2030;
+      border: 1px solid var(--green);
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--green);
+      z-index: 9999;
+      display: none;
+      animation: slide-up 0.3s ease;
+    }
+    @keyframes slide-up {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      .admin-body { grid-template-columns: 1fr; }
+      .card-full { grid-column: 1; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .outcome-presets { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     LOGIN SCREEN
+     ============================================================ -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">AviatorX</div>
+    <div class="login-subtitle">🛡️ Admin Control Panel — Restricted Access</div>
+
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" id="loginUser" value="" placeholder="admin" autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="loginPass" placeholder="••••••••" autocomplete="off">
+    </div>
+    <button class="login-btn" onclick="doLogin()">Login to Admin Panel</button>
+    <div id="loginError" class="login-error">Invalid credentials. Please try again.</div>
+    <div style="margin-top: 16px; font-size: 11px; color: #374151;">Default: admin / aviatorx@admin2024</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     ADMIN PANEL
+     ============================================================ -->
+<div id="adminPanel">
+
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-logo">AviatorX</span>
+      <span class="topbar-badge">⚙️ Admin Panel</span>
+    </div>
+    <div class="topbar-right">
+      <span class="status-dot"></span>
+      <span style="font-size: 13px; color: #22c55e;" id="statusText">Server Online</span>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="admin-body">
+
+    <!-- STAT CARDS -->
+    <div class="card card-full">
+      <div class="card-title"><span class="card-title-icon">📊</span> Live Overview</div>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-label">Game Status</div>
+          <div class="stat-value green" id="statStatus">—</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Current Multiplier</div>
+          <div class="stat-value blue" id="statMult">—</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Active Sessions</div>
+          <div class="stat-value gold" id="statUsers">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Admin Override</div>
+          <div class="stat-value red" id="statOverride">None</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OUTCOME CONTROLLER -->
+    <div class="card">
+      <div class="card-title"><span class="card-title-icon">🎯</span> Control Next Round Outcome</div>
+      <div class="outcome-form">
+
+        <div class="outcome-description">
+          Set the <strong>exact multiplier</strong> at which the plane will crash in the <strong>next round</strong>.
+          After that round, the game returns to normal provably fair randomness.
+          Leave empty / cleared to use random outcomes.
+        </div>
+
+        <div>
+          <div style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase; margin-bottom: 8px;">Quick Presets</div>
+          <div class="outcome-presets">
+            <button class="preset-btn crash" onclick="setPreset(1.00)">1.00x<br><small>Instant Crash</small></button>
+            <button class="preset-btn crash" onclick="setPreset(1.20)">1.20x<br><small>Quick Exit</small></button>
+            <button class="preset-btn mid"   onclick="setPreset(2.00)">2.00x<br><small>Standard</small></button>
+            <button class="preset-btn mid"   onclick="setPreset(3.50)">3.50x<br><small>Mid Win</small></button>
+            <button class="preset-btn big"   onclick="setPreset(5.00)">5.00x<br><small>Big Win</small></button>
+            <button class="preset-btn big"   onclick="setPreset(10.00)">10.00x<br><small>Huge Win</small></button>
+            <button class="preset-btn huge"  onclick="setPreset(25.00)">25.00x<br><small>Jackpot</small></button>
+            <button class="preset-btn huge"  onclick="setPreset(100.00)">100x<br><small>Moon 🚀</small></button>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase; margin-bottom: 8px;">Custom Multiplier</div>
+          <div class="custom-mult-row">
+            <input type="number" id="customMult" class="mult-input" placeholder="2.50" step="0.01" min="1.00">
+            <span class="mult-unit">x</span>
+            <button class="action-btn btn-set" onclick="setOutcome()">Set Override</button>
+            <button class="action-btn btn-clear" onclick="clearOutcome()">Clear</button>
+          </div>
+        </div>
+
+        <div id="overrideStatus" class="override-status"></div>
+      </div>
+    </div>
+
+    <!-- USER SESSIONS & BALANCES -->
+    <div class="card">
+      <div class="card-title"><span class="card-title-icon">👥</span> Active User Sessions</div>
+      <div id="usersTableContainer">
+        <div class="no-users">No active sessions yet.<br>Connect your website to create sessions.</div>
+      </div>
+      <div style="margin-top: 12px; text-align: right;">
+        <button class="action-btn btn-clear" style="font-size: 12px; padding: 7px 14px;" onclick="loadUsers()">↻ Refresh</button>
+      </div>
+    </div>
+
+    <!-- INTEGRATION GUIDE -->
+    <div class="card card-full">
+      <div class="card-title"><span class="card-title-icon">🔗</span> Website Integration — How to Connect</div>
+
+      <div class="tab-row">
+        <button class="tab-btn active" onclick="showTab('php')">PHP</button>
+        <button class="tab-btn" onclick="showTab('nodejs')">Node.js</button>
+        <button class="tab-btn" onclick="showTab('python')">Python</button>
+      </div>
+
+      <div id="tab-php">
+        <div style="font-size: 13px; color: #94a3b8; margin-bottom: 12px;">
+          When user clicks "Play Aviator" on your website, call this from your PHP backend:
+        </div>
+        <div class="code-block" id="phpCode">
+<span class="code-comment">// Step 1: Create a session for the user (call from your PHP backend)
+// Replace AVIATORX_API_SECRET_CHANGE_THIS_IN_PRODUCTION with your actual secret</span>
+<span class="code-key">$response</span> = file_get_contents(<span class="code-str">'http://localhost:3050/api/session/create'</span>, false, stream_context_create([
+  <span class="code-str">'http'</span> => [
+    <span class="code-str">'method'</span>  => <span class="code-str">'POST'</span>,
+    <span class="code-str">'header'</span>  => <span class="code-str">'Content-Type: application/json'</span>,
+    <span class="code-str">'content'</span> => json_encode([
+      <span class="code-str">'apiSecret'</span> => <span class="code-str">'AVIATORX_API_SECRET_CHANGE_THIS_IN_PRODUCTION'</span>,
+      <span class="code-str">'userId'</span>    => <span class="code-val">$user->id</span>,        <span class="code-comment">// your user's ID</span>
+      <span class="code-str">'username'</span>  => <span class="code-val">$user->name</span>,      <span class="code-comment">// display name</span>
+      <span class="code-str">'balance'</span>   => <span class="code-val">$user->balance</span>,   <span class="code-comment">// current wallet balance</span>
+    ])
+  ]
+]));
+<span class="code-key">$data</span> = json_decode(<span class="code-key">$response</span>, true);
+
+<span class="code-comment">// Step 2: Redirect user to the game</span>
+header(<span class="code-str">'Location: '</span> . <span class="code-key">$data</span>[<span class="code-str">'gameUrl'</span>]);
+
+<span class="code-comment">// Step 3: When user comes back, sync balance back to your DB</span>
+<span class="code-key">$sync</span> = file_get_contents(<span class="code-str">'http://localhost:3050/api/session/sync'</span>, false, stream_context_create([
+  <span class="code-str">'http'</span> => [<span class="code-str">'method'</span> => <span class="code-str">'POST'</span>, <span class="code-str">'header'</span> => <span class="code-str">'Content-Type: application/json'</span>,
+    <span class="code-str">'content'</span> => json_encode([<span class="code-str">'apiSecret'</span> => <span class="code-str">'AVIATORX_API_SECRET_CHANGE_THIS_IN_PRODUCTION'</span>, <span class="code-str">'userId'</span> => <span class="code-val">$user->id</span>])]
+]));
+<span class="code-key">$balance</span> = json_decode(<span class="code-key">$sync</span>, true)[<span class="code-str">'currentBalance'</span>];
+<span class="code-comment">// Update $user->balance = $balance in your DB</span></div>
+        <button class="copy-btn" onclick="copyCode('phpCode')">Copy</button>
+      </div>
+
+      <div id="tab-nodejs" style="display:none;">
+        <div style="font-size: 13px; color: #94a3b8; margin-bottom: 12px;">Express.js / Node.js integration example:</div>
+        <div class="code-block" id="jsCode">
+<span class="code-comment">// On your website server (Express.js)</span>
+<span class="code-key">const</span> axios = require(<span class="code-str">'axios'</span>);
+<span class="code-key">const</span> AVIATOR_URL = <span class="code-str">'http://localhost:3050'</span>;
+<span class="code-key">const</span> API_SECRET = <span class="code-str">'AVIATORX_API_SECRET_CHANGE_THIS_IN_PRODUCTION'</span>;
+
+<span class="code-comment">// Route: GET /play-aviator (user clicks "Play" on your website)</span>
+app.get(<span class="code-str">'/play-aviator'</span>, async (req, res) => {
+  <span class="code-key">const</span> user = req.session.user; <span class="code-comment">// your auth session</span>
+  <span class="code-key">const</span> { data } = await axios.post(<span class="code-str">`${AVIATOR_URL}/api/session/create`</span>, {
+    apiSecret: API_SECRET,
+    userId: user.id,
+    username: user.name,
+    balance: user.wallet_balance
+  });
+  res.redirect(data.gameUrl); <span class="code-comment">// redirect to game with token</span>
+});
+
+<span class="code-comment">// Route: GET /aviator-callback (user returns from game)</span>
+app.get(<span class="code-str">'/aviator-callback'</span>, async (req, res) => {
+  <span class="code-key">const</span> user = req.session.user;
+  <span class="code-key">const</span> { data } = await axios.post(<span class="code-str">`${AVIATOR_URL}/api/session/sync`</span>, {
+    apiSecret: API_SECRET, userId: user.id
+  });
+  <span class="code-comment">// Update DB with new balance</span>
+  await db.users.update({ id: user.id }, { wallet_balance: data.currentBalance });
+  res.redirect(<span class="code-str">'/dashboard'</span>);
+});</div>
+        <button class="copy-btn" onclick="copyCode('jsCode')">Copy</button>
+      </div>
+
+      <div id="tab-python" style="display:none;">
+        <div style="font-size: 13px; color: #94a3b8; margin-bottom: 12px;">Python / Flask / Django integration:</div>
+        <div class="code-block" id="pyCode">
+<span class="code-comment"># Flask Example</span>
+<span class="code-key">import</span> requests
+AVIATOR_URL = <span class="code-str">"http://localhost:3050"</span>
+API_SECRET = <span class="code-str">"AVIATORX_API_SECRET_CHANGE_THIS_IN_PRODUCTION"</span>
+
+<span class="code-key">@app.route</span>(<span class="code-str">"/play-aviator"</span>)
+<span class="code-key">def</span> play_aviator():
+    user = current_user  <span class="code-comment"># your logged-in user</span>
+    resp = requests.post(f<span class="code-str">"{AVIATOR_URL}/api/session/create"</span>, json={
+        <span class="code-str">"apiSecret"</span>: API_SECRET,
+        <span class="code-str">"userId"</span>:    str(user.id),
+        <span class="code-str">"username"</span>:  user.display_name,
+        <span class="code-str">"balance"</span>:   float(user.wallet_balance)
+    })
+    game_url = resp.json()[<span class="code-str">"gameUrl"</span>]
+    <span class="code-key">return</span> redirect(game_url)
+
+<span class="code-key">@app.route</span>(<span class="code-str">"/aviator-callback"</span>)
+<span class="code-key">def</span> aviator_callback():
+    user = current_user
+    sync = requests.post(f<span class="code-str">"{AVIATOR_URL}/api/session/sync"</span>, json={
+        <span class="code-str">"apiSecret"</span>: API_SECRET, <span class="code-str">"userId"</span>: str(user.id)
+    }).json()
+    user.wallet_balance = sync[<span class="code-str">"currentBalance"</span>]
+    db.session.commit()
+    <span class="code-key">return</span> redirect(<span class="code-str">"/dashboard"</span>)</div>
+        <button class="copy-btn" onclick="copyCode('pyCode')">Copy</button>
+      </div>
+
+      <div style="margin-top: 16px; padding: 12px 16px; background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25); border-radius: 8px; font-size: 13px; color: #fcd34d; line-height: 1.6;">
+        ⚠️ <strong>Production Note:</strong> The API secret <code>AVIATORX_API_SECRET_CHANGE_THIS_IN_PRODUCTION</code> must be changed in <code>server.js</code> before going live. Never expose it in frontend code. Always call the session API from your server-side backend only.
+      </div>
+    </div>
+
+  </div><!-- /admin-body -->
+</div><!-- /adminPanel -->
+
+<div id="toast" class="toast">✅ Action successful!</div>
+
+<script>
+  const ADMIN_TOKEN_KEY = 'aviatorx_admin_token';
+  let adminToken = sessionStorage.getItem(ADMIN_TOKEN_KEY);
+  let refreshTimer = null;
+
+  // Auto-show panel if already logged in
+  if (adminToken) {
+    verifyAndShowPanel();
+  }
+
+  async function doLogin() {
+    const user = document.getElementById('loginUser').value.trim();
+    const pass = document.getElementById('loginPass').value;
+    try {
+      const resp = await fetch('/admin/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: user, password: pass })
+      });
+      const data = await resp.json();
+      if (data.success) {
+        adminToken = data.token;
+        sessionStorage.setItem(ADMIN_TOKEN_KEY, adminToken);
+        showPanel();
+      } else {
+        document.getElementById('loginError').style.display = 'block';
+      }
+    } catch(e) {
+      document.getElementById('loginError').style.display = 'block';
+    }
+  }
+
+  document.getElementById('loginPass').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doLogin();
+  });
+
+  async function verifyAndShowPanel() {
+    try {
+      const r = await fetch('/admin/api/status', { headers: { 'X-Admin-Token': adminToken } });
+      if (r.ok) { showPanel(); }
+      else { logout(); }
+    } catch(e) { logout(); }
+  }
+
+  function showPanel() {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    startRefresh();
+  }
+
+  function logout() {
+    sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+    adminToken = null;
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('adminPanel').style.display = 'none';
+    if (refreshTimer) clearInterval(refreshTimer);
+  }
+
+  function startRefresh() {
+    loadStatus();
+    loadUsers();
+    refreshTimer = setInterval(() => { loadStatus(); }, 1500);
+  }
+
+  async function loadStatus() {
+    try {
+      const r = await fetch('/admin/api/status', { headers: { 'X-Admin-Token': adminToken } });
+      const d = await r.json();
+      if (d.success) {
+        const gs = d.gameState;
+        document.getElementById('statStatus').innerText = gs.status;
+        document.getElementById('statStatus').className = 'stat-value ' + (gs.status === 'FLYING' ? 'green' : gs.status === 'CRASHED' ? 'red' : 'gold');
+        document.getElementById('statMult').innerText = gs.currentMultiplier.toFixed(2) + 'x';
+        document.getElementById('statUsers').innerText = d.totalUsers;
+        document.getElementById('statOverride').innerText = gs.adminOverridePending ? gs.adminOverride.toFixed(2) + 'x ⚡' : 'None';
+      }
+    } catch(e) {
+      document.getElementById('statusText').innerText = 'Server Offline';
+    }
+  }
+
+  async function loadUsers() {
+    try {
+      const r = await fetch('/admin/api/users', { headers: { 'X-Admin-Token': adminToken } });
+      const d = await r.json();
+      const container = document.getElementById('usersTableContainer');
+
+      if (!d.users || d.users.length === 0) {
+        container.innerHTML = '<div class="no-users">No active sessions yet.<br>Connect your website to create sessions.</div>';
+        return;
+      }
+
+      let html = `<table class="users-table">
+        <thead><tr>
+          <th>User</th><th>Username</th><th>Balance (₹)</th><th>Session Started</th><th>Adjust Balance</th>
+        </tr></thead><tbody>`;
+
+      d.users.forEach(u => {
+        html += `<tr>
+          <td>${u.userId}</td>
+          <td>${u.username}</td>
+          <td class="user-bal-val">${parseFloat(u.balance).toFixed(2)}</td>
+          <td style="color:#64748b;font-size:11px;">${new Date(u.createdAt).toLocaleString()}</td>
+          <td>
+            <div class="set-bal-form">
+              <input type="number" class="set-bal-input" id="bal_${u.userId}" value="${parseFloat(u.balance).toFixed(2)}" step="100">
+              <button class="set-bal-btn" onclick="setUserBalance('${u.userId}')">Set</button>
+            </div>
+          </td>
+        </tr>`;
+      });
+
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    } catch(e) {
+      console.error(e);
+    }
+  }
+
+  async function setUserBalance(userId) {
+    const val = document.getElementById('bal_' + userId).value;
+    try {
+      await fetch('/admin/api/set-balance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Admin-Token': adminToken },
+        body: JSON.stringify({ userId, balance: parseFloat(val) })
+      });
+      showToast('Balance updated to ₹' + parseFloat(val).toFixed(2));
+      loadUsers();
+    } catch(e) { showToast('Error setting balance', true); }
+  }
+
+  function setPreset(mult) {
+    document.getElementById('customMult').value = mult.toFixed(2);
+    setOutcome(mult);
+  }
+
+  async function setOutcome(presetMult) {
+    const mult = presetMult || parseFloat(document.getElementById('customMult').value);
+    if (isNaN(mult) || mult < 1.00) {
+      alert('Please enter a valid multiplier (>= 1.00)');
+      return;
+    }
+    try {
+      const r = await fetch('/admin/api/set-outcome', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Admin-Token': adminToken },
+        body: JSON.stringify({ multiplier: mult })
+      });
+      const d = await r.json();
+      const el = document.getElementById('overrideStatus');
+      el.className = 'override-status active';
+      el.innerText = `⚡ Override ACTIVE: Next round will crash at ${mult.toFixed(2)}x`;
+      showToast(`Override set to ${mult.toFixed(2)}x`);
+      loadStatus();
+    } catch(e) { showToast('Error', true); }
+  }
+
+  async function clearOutcome() {
+    try {
+      await fetch('/admin/api/clear-outcome', {
+        method: 'POST',
+        headers: { 'X-Admin-Token': adminToken }
+      });
+      const el = document.getElementById('overrideStatus');
+      el.className = 'override-status cleared';
+      el.innerText = '✅ Override cleared. Next round uses provably fair random.';
+      showToast('Override cleared — using random RNG');
+      loadStatus();
+    } catch(e) { showToast('Error', true); }
+  }
+
+  function showTab(lang) {
+    ['php', 'nodejs', 'python'].forEach(l => {
+      document.getElementById('tab-' + l).style.display = l === lang ? 'block' : 'none';
+    });
+    document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+      btn.classList.toggle('active', ['php','nodejs','python'][i] === lang);
+    });
+  }
+
+  function copyCode(id) {
+    const el = document.getElementById(id);
+    const text = el.innerText;
+    navigator.clipboard.writeText(text).then(() => showToast('Code copied to clipboard!'));
+  }
+
+  function showToast(msg, isError = false) {
+    const t = document.getElementById('toast');
+    t.innerText = (isError ? '❌ ' : '✅ ') + msg;
+    t.style.borderColor = isError ? '#ef4444' : '#22c55e';
+    t.style.color = isError ? '#fca5a5' : '#22c55e';
+    t.style.display = 'block';
+    setTimeout(() => { t.style.display = 'none'; }, 3000);
+  }
+</script>
+</body>
+</html>

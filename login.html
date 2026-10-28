@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>RAXI .WIN - Log in</title>
+  
+  <!-- Roboto Font Family -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400;1,700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Mobile Viewport Container -->
+  <div class="app-container">
+    <!-- Header -->
+    <div class="auth-header">
+      <div class="auth-header-nav">
+        <button class="back-btn" onclick="window.history.back()" title="Back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+
+        <!-- RAXI .WIN Logo -->
+        <div class="logo-container" onclick="window.location.href='login.html'">
+          <img src="logo.png" alt="RAXI .WIN" class="main-logo-img">
+        </div>
+
+        <!-- Language Selector -->
+        <div class="lang-selector" title="Language">
+          <svg viewBox="0 0 32 32" class="flag-icon">
+            <clipPath id="circleClipLogin">
+              <circle cx="16" cy="16" r="16" />
+            </clipPath>
+            <g clip-path="url(#circleClipLogin)">
+              <rect width="32" height="32" fill="#B22234" />
+              <rect y="2.46" width="32" height="2.46" fill="#FFFFFF" />
+              <rect y="7.38" width="32" height="2.46" fill="#FFFFFF" />
+              <rect y="12.3" width="32" height="2.46" fill="#FFFFFF" />
+              <rect y="17.22" width="32" height="2.46" fill="#FFFFFF" />
+              <rect y="22.14" width="32" height="2.46" fill="#FFFFFF" />
+              <rect y="27.06" width="32" height="2.46" fill="#FFFFFF" />
+              <rect width="14" height="14.76" fill="#3C3B6E" />
+              <circle cx="3" cy="3" r="1" fill="#FFFFFF" />
+              <circle cx="7" cy="3" r="1" fill="#FFFFFF" />
+              <circle cx="11" cy="3" r="1" fill="#FFFFFF" />
+              <circle cx="5" cy="6" r="1" fill="#FFFFFF" />
+              <circle cx="9" cy="6" r="1" fill="#FFFFFF" />
+              <circle cx="3" cy="9" r="1" fill="#FFFFFF" />
+              <circle cx="7" cy="9" r="1" fill="#FFFFFF" />
+              <circle cx="11" cy="9" r="1" fill="#FFFFFF" />
+            </g>
+          </svg>
+          <span>EN</span>
+        </div>
+      </div>
+
+      <div class="auth-header-text">
+        <h1 class="auth-title">Log in</h1>
+        <p class="auth-subtitle">
+          Please log in with your phone number or email<br>
+          If you forget your password, please contact customer service
+        </p>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="auth-content">
+      <!-- Tabs -->
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab active" id="loginPhoneTab" onclick="setLoginType('phone')">
+          <svg viewBox="0 0 24 24">
+            <rect x="5" y="2" width="14" height="20" rx="3" ry="3" fill="none" stroke="currentColor" stroke-width="2"/>
+            <line x1="12" y1="18" x2="12.01" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>phone number</span>
+        </button>
+        <button type="button" class="auth-tab" id="loginEmailTab" onclick="setLoginType('email')">
+          <svg viewBox="0 0 24 24">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" fill="none" stroke="currentColor" stroke-width="2"/>
+            <polyline points="22,6 12,13 2,6" stroke="currentColor" stroke-width="2" fill="none"/>
+          </svg>
+          <span>Email Login</span>
+        </button>
+      </div>
+
+      <!-- Form -->
+      <form class="auth-form" onsubmit="handleLogin(event)">
+        <!-- Phone Number / Email Field -->
+        <div class="form-group">
+          <div class="form-label" id="loginIdentifierLabel">
+            <div class="form-label-icon">
+              <svg viewBox="0 0 24 24">
+                <rect x="6" y="2" width="12" height="20" rx="3" fill="var(--accent-red)"/>
+                <rect x="8" y="5" width="8" height="11" rx="1" fill="#ffffff"/>
+                <circle cx="12" cy="19" r="1" fill="#ffffff"/>
+              </svg>
+            </div>
+            <span id="loginLabelText">Phone number</span>
+          </div>
+
+          <div class="input-row">
+            <button type="button" class="country-code-btn" id="loginCountryCodeBtn" onclick="openCountryModal()">
+              <span class="current-country-code">+91</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div class="input-wrapper">
+              <input type="tel" id="loginIdentifier" class="input-field" placeholder="Please enter the phone number" autocomplete="username">
+            </div>
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-group">
+          <div class="form-label">
+            <div class="form-label-icon">
+              <svg viewBox="0 0 24 24">
+                <path d="M19 11H5c-1.1 0-2 .9-2 2v7c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7c0-1.1-.9-2-2-2z" fill="var(--accent-red)"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" fill="none" stroke="var(--accent-red)" stroke-width="2.5" stroke-linecap="round"/>
+                <circle cx="12" cy="16" r="1.5" fill="#ffffff"/>
+              </svg>
+            </div>
+            <span>Password</span>
+          </div>
+
+          <div class="input-row">
+            <div class="input-wrapper">
+              <input type="password" id="loginPassword" class="input-field" placeholder="Password" autocomplete="current-password">
+              <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('loginPassword', this)" title="Show/Hide Password">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Remember Password -->
+        <div class="agreement-row" onclick="toggleCheckbox('rememberCheckbox')">
+          <div class="custom-checkbox" id="rememberCheckbox">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <span class="agreement-text">Remember password</span>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="auth-actions">
+          <button type="submit" id="loginSubmitBtn" class="btn-primary is-inactive">
+            Log in
+          </button>
+          <button type="button" class="btn-outline" onclick="window.location.href='register.html'">
+            Register
+          </button>
+        </div>
+      </form>
+
+      <!-- Footer Links -->
+      <div class="auth-footer-links">
+        <button type="button" class="footer-link-item" onclick="window.location.href='forgot-password.html'">
+          <div class="footer-icon-badge">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="11" fill="none" stroke="var(--accent-red)" stroke-width="1.8"/>
+              <path d="M15 11H9c-.6 0-1 .4-1 1v5c0 .6.4 1 1 1h6c.6 0 1-.4 1-1v-5c0-.6-.4-1-1-1z" fill="var(--accent-red)"/>
+              <path d="M10 11V9a2 2 0 0 1 4 0v2" fill="none" stroke="var(--accent-red)" stroke-width="1.8"/>
+            </svg>
+          </div>
+          <span>Forgot password</span>
+        </button>
+
+        <!-- Customer Service -> Telegram Link -->
+        <button type="button" class="footer-link-item" onclick="openSupportModal()">
+          <div class="footer-icon-badge">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12c0 1.82.49 3.53 1.34 5L2 22l5.24-1.31C8.67 21.49 10.29 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2z" fill="var(--accent-red)"/>
+              <circle cx="9" cy="11.5" r="1.3" fill="#ffffff"/>
+              <circle cx="15" cy="11.5" r="1.3" fill="#ffffff"/>
+              <path d="M8.5 15c1 1.2 2.2 1.6 3.5 1.6s2.5-.4 3.5-1.6" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <span>Customer Service</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Country Modal -->
+  <div id="countryModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">Select Country / Region</div>
+        <button class="modal-close-btn" onclick="closeCountryModal()">✕</button>
+      </div>
+      <div class="modal-search">
+        <input type="text" id="countrySearchInput" placeholder="Search country or code (e.g. India, +91)...">
+      </div>
+      <div class="modal-list" id="countryList"></div>
+    </div>
+  </div>
+
+  <!-- Telegram Support Modal -->
+  <div id="supportModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">Customer Service</div>
+        <button class="modal-close-btn" onclick="closeSupportModal()">✕</button>
+      </div>
+      <div class="support-card-content">
+        <div class="telegram-logo-large">
+          <svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+          </svg>
+        </div>
+        <div class="support-title">Connect with Customer Support</div>
+        <p class="support-desc">
+          Our official 24/7 customer support is available directly on Telegram to assist you.
+        </p>
+        <a id="telegramDirectBtn" class="btn-telegram" href="https://t.me/yaarwinsupport" target="_blank" rel="noopener noreferrer" onclick="openTelegramDirect()">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+          </svg>
+          Open Telegram Support
+        </a>
+        <div class="support-input-row" style="margin-top: 8px;">
+          <label>Configured Telegram Support Link:</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="supportLinkInput" value="https://t.me/yaarwinsupport">
+            <button class="btn-primary" style="width: auto; padding: 0 16px; height: 38px; font-size: 13px;" onclick="saveCustomTelegramLink()">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    function setLoginType(type) {
+      state.loginTab = type;
+      const phoneTab = document.getElementById('loginPhoneTab');
+      const emailTab = document.getElementById('loginEmailTab');
+      const countryBtn = document.getElementById('loginCountryCodeBtn');
+      const labelText = document.getElementById('loginLabelText');
+      const input = document.getElementById('loginIdentifier');
+
+      if (type === 'phone') {
+        phoneTab.classList.add('active');
+        emailTab.classList.remove('active');
+        countryBtn.style.display = 'flex';
+        labelText.textContent = 'Phone number';
+        input.placeholder = 'Please enter the phone number';
+        input.type = 'tel';
+      } else {
+        phoneTab.classList.remove('active');
+        emailTab.classList.add('active');
+        countryBtn.style.display = 'none';
+        labelText.textContent = 'Email address';
+        input.placeholder = 'Please enter your email';
+        input.type = 'email';
+      }
+    }
+    function toggleCheckbox(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('checked');
+    }
+  </script>
+</body>
+</html>

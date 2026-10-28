@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RAXI WIN - Admin Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+  <!-- ======================================================== -->
+  <!-- 0. RAXI WIN ANIMATED SPLASH / BUFFERING LOADER           -->
+  <!-- ======================================================== -->
+  <div id="raxiSplashLoader" class="raxi-splash-loader">
+    <div class="raxi-spinner-wrap">
+      <div class="raxi-orbit-ring"></div>
+      <div class="raxi-orbit-ring raxi-ring-2"></div>
+      <div class="raxi-orbit-dot"></div>
+      <img src="assets/raxi_admin_logo.png" alt="RAXI WIN" class="raxi-splash-logo">
+    </div>
+    <p class="raxi-loading-text">Loading <span class="raxi-dots"><span>.</span><span>.</span><span>.</span></span></p>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- 1. ADMIN LOGIN VIEW                                      -->
+  <!-- ======================================================== -->
+  <div id="adminLoginScreen" class="admin-login-wrapper">
+    <div class="login-card">
+      <div class="login-header">
+        <img src="assets/raxi_admin_logo.png" alt="RAXI.WIN" class="login-logo-img">
+        <p class="login-subtitle">ADMIN PANEL & MASTER CONTROL</p>
+      </div>
+
+      <form class="login-form" onsubmit="handleAdminLogin(event)">
+        <div class="form-group">
+          <label>Admin Username</label>
+          <div class="input-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <input type="text" id="adminUserInput" placeholder="Enter username" value="admin" required autocomplete="username">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Security Password / PIN</label>
+          <div class="input-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input type="password" id="adminPassInput" placeholder="Enter password" value="admin123" required autocomplete="current-password">
+          </div>
+        </div>
+
+        <button type="submit" class="admin-gold-btn" id="loginBtn">
+          <span>Authorize Access</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+
+        <div class="login-footer-hints">
+          <span>Default Credentials: <code>admin</code> / <code>admin123</code></span>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- 2. ADMIN MAIN CONSOLE (PROTECTED APP LAYOUT)              -->
+  <!-- ======================================================== -->
+  <div id="adminApp" class="admin-app-layout" style="display: none;">
+    
+    <!-- Left Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">
+        <img src="assets/raxi_admin_logo.png" alt="RAXI.WIN" class="admin-main-logo-img">
+        <span class="brand-admin-tag">ADMIN PANEL</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <!-- 1. Dashboard -->
+        <button class="nav-item active" onclick="switchAdminTab('dashboard')">
+          <div class="nav-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+          </div>
+          <span>Dashboard</span>
+        </button>
+
+        <!-- 2. WinGo Game Controller (Dedicated Section) -->
+        <button class="nav-item" onclick="switchAdminTab('wingo')">
+          <div class="nav-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/></svg>
+          </div>
+          <span>WinGo Game Controller</span>
+        </button>
+
+        <!-- 3. Aviator Crash Controller (Dedicated Section) -->
+        <button class="nav-item" onclick="switchAdminTab('aviator')">
+          <div class="nav-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3.5c-.5-.5-2.5 0-4 1.5L13.5 8.5 5.3 6.7c-.8-.2-1.6.3-1.8 1.1-.1.5.1 1 .5 1.4l5.5 4.5-3.5 3.5-2.5-.5c-.4-.1-.8.1-1.1.4l-.4.4c-.4.4-.3 1 .1 1.4l3.5 2.5 2.5 3.5c.4.4 1 .5 1.4.1l.4-.4c.3-.3.5-.7.4-1.1l-.5-2.5 3.5-3.5 4.5 5.5c.4.4.9.6 1.4.5.8-.2 1.3-1 1.1-1.8z"/></svg>
+          </div>
+          <span>Aviator Crash Controller</span>
+        </button>
+
+        <!-- 4. User Accounts -->
+        <button class="nav-item" onclick="switchAdminTab('users')">
+          <div class="nav-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
+          </div>
+          <span>User Accounts</span>
+        </button>
+
+        <!-- 5. Deposits & Payouts (Financial Approvals) -->
+        <button class="nav-item" onclick="switchAdminTab('financials')">
+          <div class="nav-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          </div>
+          <span>Deposits & Payouts</span>
+          <span class="badge-count" id="badgePendingFinances">0</span>
+        </button>
+
+        <!-- 6. Gift Code Manager -->
+        <button class="nav-item" onclick="switchAdminTab('giftcodes')">
+          <div class="nav-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+          </div>
+          <span>Gift Code Manager</span>
+        </button>
+
+        <!-- 7. Platform Settings -->
+        <button class="nav-item" onclick="switchAdminTab('settings')">
+          <div class="nav-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </div>
+          <span>Platform Settings</span>
+        </button>
+      </nav>
+
+      <!-- Sidebar Bottom Info (Screenshot exact) -->
+      <div class="sidebar-bottom-info">
+        <span class="console-ver">Console v1.2</span>
+        <span class="console-port"><span class="port-dot"></span> Port 3005</span>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="admin-main">
+      
+      <!-- Top Bar (Screenshot exact) -->
+      <header class="admin-topbar">
+        <div class="topbar-left">
+          <h2 class="current-section-title" id="pageTitle">Dashboard Overview</h2>
+        </div>
+
+        <div class="topbar-right">
+          <div class="server-status-pill">
+            <span class="pulse-dot"></span> Game Server: Online (Port 3005)
+          </div>
+          <a href="/" target="_blank" class="btn-open-player">Open Player Client ↗</a>
+        </div>
+      </header>
+
+      <!-- ======================================================== -->
+      <!-- VIEW 1: DASHBOARD OVERVIEW (Screenshot 4)               -->
+      <!-- ======================================================== -->
+      <section id="viewDashboard" class="admin-tab-view active">
+        
+        <!-- 4 Top Metric Cards (Screenshot 4) -->
+        <div class="metrics-grid-4">
+          <div class="metric-card-dark">
+            <span class="metric-card-title">Total Registered Users</span>
+            <div class="metric-card-val text-white" id="statTotalUsers">1,482</div>
+            <span class="metric-card-sub text-green">+42 Today</span>
+          </div>
+
+          <div class="metric-card-dark">
+            <span class="metric-card-title">Today's Total Deposits</span>
+            <div class="metric-card-val text-gold" id="statApprovedDeposits">₹482,900</div>
+            <span class="metric-card-sub text-green" id="statDepositCount">124 Orders</span>
+          </div>
+
+          <div class="metric-card-dark">
+            <span class="metric-card-title">Today's Withdrawals</span>
+            <div class="metric-card-val text-white" id="statApprovedWithdrawals">₹219,450</div>
+            <span class="metric-card-sub text-sage" id="statWithdrawCount">38 Processed</span>
+          </div>
+
+          <div class="metric-card-dark">
+            <span class="metric-card-title">Net Gaming Revenue</span>
+            <div class="metric-card-val text-green" id="statNetRevenue">₹263,450</div>
+            <span class="metric-card-sub text-green">Margin +54.5%</span>
+          </div>
+        </div>
+
+        <!-- Middle Card: Live WinGo Round Status (Screenshot 4) -->
+        <div class="card-panel-emerald">
+          <div class="panel-header-row">
+            <div class="panel-title-group">
+              <span class="panel-icon">🎲</span>
+              <h3 class="panel-title-text">Live WinGo Round Status</h3>
+            </div>
+            <div class="panel-right-meta">
+              <span>Current Issue: <strong class="mono-val text-white" id="dashWingoPeriod">20261028010893</strong></span>
+            </div>
+          </div>
+
+          <div class="dash-wingo-grid">
+            <div class="dash-wingo-box">
+              <span class="dash-box-label">Active Bets Placed This Round</span>
+              <span class="dash-box-val text-white" id="dashWingoActiveBets">₹34,800.00</span>
+            </div>
+
+            <div class="dash-wingo-box">
+              <span class="dash-box-label">Current Draw Mode</span>
+              <span class="dash-box-val text-green" id="dashWingoMode">Auto (Random)</span>
+            </div>
+
+            <div class="dash-wingo-box">
+              <span class="dash-box-label">Predetermined Override</span>
+              <span class="dash-box-val text-white" id="dashWingoOverride">None (Fair RNG)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Card: Recent Financial Activity (Screenshot 4) -->
+        <div class="card-panel-emerald">
+          <div class="panel-header-row">
+            <div class="panel-title-group">
+              <span class="panel-icon">💳</span>
+              <h3 class="panel-title-text">Recent Financial Activity</h3>
+            </div>
+          </div>
+
+          <div class="table-responsive-wrapper">
+            <table class="emerald-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>User UID</th>
+                  <th>Type</th>
+                  <th>Amount</th>
+                  <th>Channel</th>
+                  <th>Status</th>
+                  <th>Time</th>
+                </tr>
+              </thead>
+              <tbody id="dashboardActivityList">
+                <tr><td colspan="7" class="empty-state">Loading transactions...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- VIEW 2: WINGO GAME CONTROLLER (DEDICATED SECTION)        -->
+      <!-- ======================================================== -->
+      <section id="viewWingoGame" class="admin-tab-view">
+        
+        <!-- 4 Game Mode Selector Cards -->
+        <div class="wingo-modes-selector-grid">
+          <button class="wingo-mode-box active" data-game="30s" onclick="selectWingoGame('30s')">
+            <div class="mode-box-header">
+              <span class="mode-box-name">WinGo 30sec</span>
+              <span class="mode-badge-turbo">TURBO</span>
+            </div>
+            <div class="mode-box-timer" id="adminWingoTimer30s">--s</div>
+            <div class="mode-box-period" id="adminWingoPeriod30s">Period: ---</div>
+          </button>
+
+          <button class="wingo-mode-box" data-game="1m" onclick="selectWingoGame('1m')">
+            <div class="mode-box-header">
+              <span class="mode-box-name">WinGo 1 Min</span>
+              <span class="mode-badge-std">STANDARD</span>
+            </div>
+            <div class="mode-box-timer" id="adminWingoTimer1m">--s</div>
+            <div class="mode-box-period" id="adminWingoPeriod1m">Period: ---</div>
+          </button>
+
+          <button class="wingo-mode-box" data-game="3m" onclick="selectWingoGame('3m')">
+            <div class="mode-box-header">
+              <span class="mode-box-name">WinGo 3 Min</span>
+              <span class="mode-badge-std">CLASSIC</span>
+            </div>
+            <div class="mode-box-timer" id="adminWingoTimer3m">--s</div>
+            <div class="mode-box-period" id="adminWingoPeriod3m">Period: ---</div>
+          </button>
+
+          <button class="wingo-mode-box" data-game="5m" onclick="selectWingoGame('5m')">
+            <div class="mode-box-header">
+              <span class="mode-box-name">WinGo 5 Min</span>
+              <span class="mode-badge-std">STRATEGIC</span>
+            </div>
+            <div class="mode-box-timer" id="adminWingoTimer5m">--s</div>
+            <div class="mode-box-period" id="adminWingoPeriod5m">Period: ---</div>
+          </button>
+        </div>
+
+        <!-- Active Game Metrics Bar -->
+        <div class="card-panel-emerald">
+          <div class="panel-header-row">
+            <div class="panel-title-group">
+              <h3 class="panel-title-text" id="activeWingoTitle">WinGo 30sec - Live Controller</h3>
+              <span class="capsule-pill pill-active" id="wingoPeriodStatusBadge">Betting Open</span>
+            </div>
+            <div class="panel-right-meta">
+              <span class="text-sage text-sm" id="wingoCurrentModeLabel">Mode: Fair Automatic RNG</span>
+              <button class="btn-pill-action" onclick="resetWingoOverride()">⚡ Revert to Fair RNG</button>
+            </div>
+          </div>
+
+          <div class="metrics-grid-4" style="margin-top: 14px;">
+            <div class="metric-card-dark">
+              <span class="metric-card-title">Active Period</span>
+              <div class="metric-card-val mono-val text-white" id="wingoPeriodDisplay">---</div>
+            </div>
+            <div class="metric-card-dark">
+              <span class="metric-card-title">Countdown Remaining</span>
+              <div class="metric-card-val text-gold mono-val" id="wingoTimerDisplay">--s</div>
+            </div>
+            <div class="metric-card-dark">
+              <span class="metric-card-title">Round Bets Placed</span>
+              <div class="metric-card-val text-green mono-val" id="wingoBetsCount">0</div>
+            </div>
+            <div class="metric-card-dark">
+              <span class="metric-card-title">Total Round Pool</span>
+              <div class="metric-card-val text-gold mono-val" id="wingoPoolVolume">₹0.00</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Master Outcome Manipulation Panel -->
+        <div class="card-panel-emerald">
+          <div class="panel-header-row">
+            <div class="panel-title-group">
+              <span class="panel-icon">🎯</span>
+              <h3 class="panel-title-text">Master Outcome Manipulation (1-Click Override)</h3>
+            </div>
+          </div>
+
+          <!-- Active Override Banner -->
+          <div class="override-status-banner" id="wingoOverrideBanner">
+            <div class="override-banner-content">
+              <div class="override-target-ball-preview" id="wingoTargetBallPreview">?</div>
+              <div class="override-banner-info">
+                <h4 id="wingoOverrideStatusTitle">Fair Automatic RNG Active</h4>
+                <p id="wingoOverrideStatusSub">Round will be drawn naturally using fair RNG unless overridden below.</p>
+              </div>
+            </div>
+            <button class="btn-pill-reject" id="btnResetWingoOverride" onclick="resetWingoOverride()">Reset to Fair RNG</button>
+          </div>
+
+          <div class="override-controls-wrapper">
+            <!-- 1. Color Override -->
+            <div class="override-control-section">
+              <span class="section-micro-title">Option 1: Force Winning Color</span>
+              <div class="force-buttons-row">
+                <button class="btn-force-chip force-chip-green" onclick="forceWingoColor('green')">
+                  <span>🟢 Force Green</span>
+                  <span class="chip-ratio">2x</span>
+                </button>
+                <button class="btn-force-chip force-chip-violet" onclick="forceWingoColor('violet')">
+                  <span>🟣 Force Violet</span>
+                  <span class="chip-ratio">4.5x</span>
+                </button>
+                <button class="btn-force-chip force-chip-red" onclick="forceWingoColor('red')">
+                  <span>🔴 Force Red</span>
+                  <span class="chip-ratio">2x</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- 2. Size Override -->
+            <div class="override-control-section">
+              <span class="section-micro-title">Option 2: Force Big / Small</span>
+              <div class="force-buttons-row">
+                <button class="btn-force-chip force-chip-big" onclick="forceWingoSize('Big')">
+                  <span>🟠 Force BIG (5, 6, 7, 8, 9)</span>
+                  <span class="chip-ratio">2x</span>
+                </button>
+                <button class="btn-force-chip force-chip-small" onclick="forceWingoSize('Small')">
+                  <span>🔵 Force SMALL (0, 1, 2, 3, 4)</span>
+                  <span class="chip-ratio">2x</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- 3. Exact 10 Number Balls (0-9) -->
+            <div class="override-control-section">
+              <span class="section-micro-title">Option 3: Force Exact Winning Number Ball (0 - 9) [9x Payout]</span>
+              <div class="balls-grid-interactive" id="adminBallsGrid"></div>
+            </div>
+
+            <!-- 4. Combo Presets -->
+            <div class="override-control-section">
+              <span class="section-micro-title">Option 4: Strategic Combo Presets</span>
+              <div class="combo-presets-grid">
+                <button class="btn-preset-chip" onclick="applyWingoPreset('green', 'Big')">🟢 Green + BIG (7, 9)</button>
+                <button class="btn-preset-chip" onclick="applyWingoPreset('green', 'Small')">🟢 Green + SMALL (1, 3)</button>
+                <button class="btn-preset-chip" onclick="applyWingoPreset('red', 'Big')">🔴 Red + BIG (6, 8)</button>
+                <button class="btn-preset-chip" onclick="applyWingoPreset('red', 'Small')">🔴 Red + SMALL (2, 4)</button>
+                <button class="btn-preset-chip" onclick="applyWingoPreset('violet', 'Small')">🟣 Violet 0 (SMALL)</button>
+                <button class="btn-preset-chip" onclick="applyWingoPreset('violet', 'Big')">🟣 Violet 5 (BIG)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pool Distribution & Round Bets Layout -->
+        <div class="games-two-col-layout">
+          <!-- Live Pool Breakdown -->
+          <div class="card-panel-emerald">
+            <div class="panel-header-row">
+              <h3 class="panel-title-text">📊 Live Pool Distribution</h3>
+            </div>
+            <div class="pool-items-column">
+              <div class="pool-stat-row pool-border-green">
+                <span>🟢 Green Pool</span>
+                <span class="pool-val mono-val text-gold" id="poolAmountGreen">₹0.00</span>
+              </div>
+              <div class="pool-stat-row pool-border-violet">
+                <span>🟣 Violet Pool</span>
+                <span class="pool-val mono-val text-gold" id="poolAmountViolet">₹0.00</span>
+              </div>
+              <div class="pool-stat-row pool-border-red">
+                <span>🔴 Red Pool</span>
+                <span class="pool-val mono-val text-gold" id="poolAmountRed">₹0.00</span>
+              </div>
+              <div class="pool-stat-row pool-border-big">
+                <span>🟠 Big Pool</span>
+                <span class="pool-val mono-val text-gold" id="poolAmountBig">₹0.00</span>
+              </div>
+              <div class="pool-stat-row pool-border-small">
+                <span>🔵 Small Pool</span>
+                <span class="pool-val mono-val text-gold" id="poolAmountSmall">₹0.00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Bets Table -->
+          <div class="card-panel-emerald">
+            <div class="panel-header-row">
+              <div class="panel-title-group">
+                <h3 class="panel-title-text">👥 Real-Time Round Bets</h3>
+                <span class="capsule-pill pill-active">Live Sync</span>
+              </div>
+            </div>
+            <div class="table-responsive-wrapper">
+              <table class="emerald-table">
+                <thead>
+                  <tr>
+                    <th>UID</th>
+                    <th>Selection</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Time</th>
+                  </tr>
+                </thead>
+                <tbody id="wingoLiveBetsTbody">
+                  <tr><td colspan="5" class="empty-state">No bets placed in this round yet.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- ======================================================== -->
+      <!-- VIEW 3: AVIATOR CRASH CONTROLLER (DEDICATED SECTION)     -->
+      <!-- ======================================================== -->
+      <section id="viewAviatorGame" class="admin-tab-view">
+
+        <!-- Top Header Row -->
+        <div class="card-panel-emerald">
+          <div class="panel-header-row">
+            <div class="panel-title-group">
+              <span class="panel-icon">✈️</span>
+              <h3 class="panel-title-text">AviatorX Crash Controller</h3>
+              <span class="capsule-pill pill-active" id="aviatorModeBadge">🎲 Fair Auto RNG</span>
+            </div>
+            <button class="btn-pill-action" onclick="clearAviatorOverride()">⚡ Revert to Auto</button>
+          </div>
+
+          <!-- Live Stats Row -->
+          <div class="avi-stats-row">
+            <div class="avi-stat-box">
+              <span class="avi-stat-label">Next Crash</span>
+              <span class="avi-stat-val" id="aviatorCrashPreview" style="color:#ff4d61;">AUTO</span>
+            </div>
+            <div class="avi-stat-box">
+              <span class="avi-stat-label">Active Players</span>
+              <span class="avi-stat-val" id="aviActivePlayers">—</span>
+            </div>
+            <div class="avi-stat-box">
+              <span class="avi-stat-label">Last Multiplier</span>
+              <span class="avi-stat-val" id="aviLastMult" style="color:#22c55e;">—</span>
+            </div>
+            <div class="avi-stat-box">
+              <span class="avi-stat-label">Override Status</span>
+              <span class="avi-stat-val" id="aviOverrideStatus">None</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Crash Override Controls -->
+        <div class="card-panel-emerald" style="margin-top:14px;">
+          <div class="panel-header-row">
+            <div class="panel-title-group">
+              <span class="panel-icon">🎯</span>
+              <h3 class="panel-title-text">Set Next Round Crash Point</h3>
+            </div>
+          </div>
+
+          <!-- Manual Input -->
+          <div class="aviator-input-box">
+            <label>Custom Crash Multiplier (e.g. 1.50x, 5.00x, 100.00x):</label>
+            <div class="input-action-flex">
+              <input type="number" id="aviatorCustomInput" step="0.01" min="1.00" max="1000.00" placeholder="Enter crash point (e.g. 2.50)">
+              <button class="admin-gold-btn" onclick="submitAviatorCustomCrash()">🎯 Apply Next Crash</button>
+            </div>
+          </div>
+
+          <!-- Preset Chips -->
+          <div class="aviator-presets-section">
+            <span class="section-micro-title">⚡ Instant 1-Click Crash Presets:</span>
+            <div class="aviator-chips-grid">
+              <button class="btn-mult-chip house-win" onclick="forceAviatorCrash(1.00)">💥 1.00x (Instant Crash)</button>
+              <button class="btn-mult-chip" onclick="forceAviatorCrash(1.10)">1.10x</button>
+              <button class="btn-mult-chip" onclick="forceAviatorCrash(1.25)">1.25x</button>
+              <button class="btn-mult-chip" onclick="forceAviatorCrash(1.50)">1.50x</button>
+              <button class="btn-mult-chip" onclick="forceAviatorCrash(2.00)">2.00x</button>
+              <button class="btn-mult-chip" onclick="forceAviatorCrash(3.00)">3.00x</button>
+              <button class="btn-mult-chip" onclick="forceAviatorCrash(5.00)">5.00x</button>
+              <button class="btn-mult-chip" onclick="forceAviatorCrash(10.00)">10.00x</button>
+              <button class="btn-mult-chip mega-mult" onclick="forceAviatorCrash(50.00)">🚀 50.00x</button>
+              <button class="btn-mult-chip mega-mult" onclick="forceAviatorCrash(100.00)">🌙 100.00x</button>
+              <button class="btn-mult-chip mega-mult" onclick="forceAviatorCrash(500.00)">💎 500.00x</button>
+              <button class="btn-mult-chip" style="background:rgba(34,197,94,0.15);border-color:#22c55e;color:#22c55e;" onclick="clearAviatorOverride()">🔄 Auto RNG</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Game Preview + History -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;">
+
+          <!-- Live Outcome History -->
+          <div class="card-panel-emerald">
+            <div class="panel-header-row">
+              <div class="panel-title-group">
+                <span class="panel-icon">📊</span>
+                <h3 class="panel-title-text">Recent Crash Results</h3>
+              </div>
+              <button class="btn-pill-action" onclick="loadAviatorHistory()">↻ Refresh</button>
+            </div>
+            <div id="aviHistoryList" style="display:flex;flex-wrap:wrap;gap:8px;padding:12px 0;">
+              <span style="color:#64748b;font-size:13px;">Loading history...</span>
+            </div>
+          </div>
+
+          <!-- Game Frame Preview -->
+          <div class="card-panel-emerald">
+            <div class="panel-header-row">
+              <div class="panel-title-group">
+                <span class="panel-icon">🖥️</span>
+                <h3 class="panel-title-text">Live Game Preview</h3>
+              </div>
+              <button class="btn-pill-action" onclick="document.getElementById('aviPreviewFrame').src='/games/aviator-game/index.html'">↻ Reload</button>
+            </div>
+            <div style="border-radius:10px;overflow:hidden;border:1px solid var(--admin-border-panel);height:300px;">
+              <iframe id="aviPreviewFrame" src="/games/aviator-game/index.html" style="width:100%;height:100%;border:none;transform-origin:top left;"></iframe>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- VIEW 4: USER ACCOUNT MANAGEMENT (Screenshot 3)           -->
+      <!-- ======================================================== -->
+      <section id="viewUsers" class="admin-tab-view">
+        <div class="card-panel-emerald">
+          <div class="panel-header-row">
+            <div class="panel-title-group">
+              <span class="panel-icon">👥</span>
+              <h3 class="panel-title-text">Registered Player Accounts</h3>
+            </div>
+            <div class="panel-right-search">
+              <input type="text" id="userSearchInput" class="table-search-input" placeholder="Search by UID or Phone..." oninput="filterUsersTable()">
+            </div>
+          </div>
+
+          <div class="table-responsive-wrapper">
+            <table class="emerald-table">
+              <thead>
+                <tr>
+                  <th>UID</th>
+                  <th>Username</th>
+                  <th>Registered Phone</th>
+                  <th>VIP Level</th>
+                  <th>Wallet Balance</th>
+                  <th>Account Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="usersTableBody">
+                <tr><td colspan="7" class="empty-state">Loading users...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- VIEW 5: FINANCIAL APPROVALS (Screenshot 2)               -->
+      <!-- ======================================================== -->
+      <section id="viewFinancials" class="admin-tab-view">
+        
+        <!-- Card 1: Pending Deposit Approvals (Screenshot 2) -->
+        <div class="card-panel-emerald">
+          <div class="panel-header-row">
+            <div class="panel-title-group">
+              <span class="panel-icon">📥</span>
+              <h3 class="panel-title-text">Pending Deposit Approvals</h3>
+            </div>
+          </div>
+
+          <div class="table-responsive-wrapper">
+            <table class="emerald-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>UID</th>
+                  <th>Amount</th>
+                  <th>Payment Channel</th>
+                  <th>UTR / Reference No</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="depositsTableBody">
+                <tr><td colspan="6" class="empty-state">No pending deposits in queue.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Card 2: Pending Withdrawal Requests (Screenshot 2) -->
+        <div class="card-panel-emerald">
+          <div class="panel-header-row">
+            <div class="panel-title-group">
+              <span class="panel-icon">📤</span>
+              <h3 class="panel-title-text">Pending Withdrawal Requests</h3>
+            </div>
+          </div>
+
+          <div class="table-responsive-wrapper">
+            <table class="emerald-table">
+              <thead>
+                <tr>
+                  <th>Request ID</th>
+                  <th>UID</th>
+                  <th>Amount</th>
+                  <th>Payout Method</th>
+                  <th>Bank / UPI ID</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="withdrawalsTableBody">
+                <tr><td colspan="6" class="empty-state">No pending withdrawals in queue.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- VIEW 6: GIFT CODE MANAGER (Screenshot 1)                 -->
+      <!-- ======================================================== -->
+      <section id="viewGiftCodes" class="admin-tab-view">
+        
+        <!-- Card 1: Generate Promotional Gift Codes (Screenshot 1) -->
+        <div class="card-panel-emerald">
+          <div class="panel-header-row">
+            <div class="panel-title-group">
+              <span class="panel-icon">🎁</span>
+              <h3 class="panel-title-text">Generate Promotional Gift Codes</h3>
+            </div>
+          </div>
+
+          <form class="gift-code-form-inline" onsubmit="handleCreateGiftCode(event)">
+            <input type="text" id="giftCodeInput" class="emerald-input flex-2" placeholder="Code Name (e.g. FESTIVE2026)" required>
+            <input type="number" id="giftBonusInput" class="emerald-input flex-1" placeholder="Bonus Amount (₹)" value="100" min="1" step="1" required>
+            <input type="number" id="giftMaxClaimsInput" class="emerald-input flex-1" placeholder="Max Claims" value="500" min="1" step="1" required>
+            <button type="submit" class="btn-create-code">Create Code</button>
+          </form>
+        </div>
+
+        <!-- Card 2: Gift Codes List Table (Screenshot 1) -->
+        <div class="card-panel-emerald">
+          <div class="table-responsive-wrapper">
+            <table class="emerald-table">
+              <thead>
+                <tr>
+                  <th>Gift Code</th>
+                  <th>Bonus Value</th>
+                  <th>Claims Used / Max</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="giftCodesTableBody">
+                <tr><td colspan="5" class="empty-state">Loading gift codes...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- VIEW 7: PLATFORM SETTINGS & PAYMENT SETUP                -->
+      <!-- ======================================================== -->
+      <section id="viewSettings" class="admin-tab-view">
+        
+        <!-- CARD 1: PRIMARY DEPOSIT UPI & QR CODE GATEWAY SETUP -->
+        <div class="card-panel-emerald">
+          <div class="panel-header-row">
+            <div class="panel-title-group">
+              <span class="panel-icon">💳</span>
+              <h3 class="panel-title-text">Primary Deposit UPI & QR Code Configuration (Direct to Your Bank)</h3>
+            </div>
+          </div>
+
+          <p class="panel-sub-desc">
+            Specify where player recharge payments land. When users scan the QR or pay via UPI, the payment lands directly into your specified account.
+          </p>
+
+          <div class="gateway-setup-grid">
+            <!-- Left Column: Settings Form -->
+            <form class="gateway-form" onsubmit="handleSavePaymentGateway(event)">
+              <div class="form-group-block">
+                <label>Primary Deposit UPI ID (Your UPI handle where player money will land):</label>
+                <input type="text" id="settingUpiId" class="emerald-input" placeholder="e.g. yourname@okhdfcbank or merchant@upi" required>
+                <span class="input-hint-text">Players copy or scan this exact UPI ID on the deposit page.</span>
+              </div>
+
+              <div class="form-group-block">
+                <label>Merchant / Payee Name (Shown to player on payment screen):</label>
+                <input type="text" id="settingPayeeName" class="emerald-input" placeholder="e.g. DmFirst Pay or Your Business Name" value="DmFirst Pay">
+              </div>
+
+              <div class="form-group-block">
+                <label>QR Code Generation Mode:</label>
+                <div class="qr-mode-radio-group">
+                  <label class="radio-label">
+                    <input type="radio" name="settingQrMode" value="dynamic" checked onchange="toggleQrModeDisplay()">
+                    <span>Dynamic Auto-QR (Generates UPI QR with exact amount & your UPI ID)</span>
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="settingQrMode" value="custom" onchange="toggleQrModeDisplay()">
+                    <span>Custom Static QR Image (Upload your PhonePe / GPay QR code)</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Upload QR Box -->
+              <div class="form-group-block" id="customQrUploadSection" style="display: none;">
+                <label>Upload Custom QR Code Image (PNG / JPG):</label>
+                <div class="qr-upload-dropzone" onclick="document.getElementById('qrFileInput').click()">
+                  <input type="file" id="qrFileInput" accept="image/*" style="display: none;" onchange="handleQrFileSelected(event)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28" height="28"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  <span>Click to browse or drop your QR code image here</span>
+                  <span class="text-sage text-sm" id="qrFileNamePreview">Supports PNG, JPG, WebP</span>
+                </div>
+              </div>
+
+              <button type="submit" class="admin-gold-btn" style="margin-top: 10px;">
+                <span>Save Payment & QR Configuration</span>
+              </button>
+            </form>
+
+            <!-- Right Column: Live Player Deposit Preview -->
+            <div class="player-deposit-preview-card">
+              <span class="preview-badge">Live Player Screen Preview</span>
+              <div class="preview-inner-box">
+                <div class="preview-amount-tag">₹500.00</div>
+                <div class="preview-qr-box">
+                  <img src="/qr_upi.svg" id="liveQrPreviewImg" alt="Payment QR Preview">
+                </div>
+                <div class="preview-upi-details">
+                  <span class="preview-payee-name" id="previewPayeeName">DmFirst Pay</span>
+                  <div class="preview-upi-copy-row">
+                    <span class="preview-upi-id" id="previewUpiId">raxiwin@upi</span>
+                    <button type="button" class="btn-copy-preview">Copy</button>
+                  </div>
+                </div>
+                <span class="preview-helper-text">Player scans code or taps UPI app to transfer money directly to your account.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 2: TELEGRAM & PLATFORM RULES -->
+        <div class="card-panel-emerald">
+          <div class="panel-header-row">
+            <div class="panel-title-group">
+              <span class="panel-icon">✈️</span>
+              <h3 class="panel-title-text">Customer Support & Platform Settings</h3>
+            </div>
+          </div>
+
+          <form class="platform-settings-form" onsubmit="handleSavePlatformSettings(event)">
+            <div class="settings-two-col">
+              <div class="form-group-block">
+                <label>Telegram Support Link (Used for 24/7 customer service):</label>
+                <input type="text" id="settingTelegramSupport" class="emerald-input" placeholder="https://t.me/your_support">
+              </div>
+
+              <div class="form-group-block">
+                <label>Telegram Official Channel Link:</label>
+                <input type="text" id="settingTelegramChannel" class="emerald-input" placeholder="https://t.me/your_channel">
+              </div>
+
+              <div class="form-group-block">
+                <label>Minimum Deposit Amount (₹):</label>
+                <input type="number" id="settingMinDeposit" class="emerald-input" value="100" min="10">
+              </div>
+
+              <div class="form-group-block">
+                <label>Minimum Withdrawal Amount (₹):</label>
+                <input type="number" id="settingMinWithdraw" class="emerald-input" value="200" min="10">
+              </div>
+            </div>
+
+            <div class="form-group-block" style="margin-top: 14px;">
+              <label>Scrolling Platform Announcement:</label>
+              <textarea id="settingAnnouncement" class="emerald-textarea" rows="2" placeholder="Welcome announcement visible on player app..."></textarea>
+            </div>
+
+            <div class="checkbox-row" style="margin-top: 10px;">
+              <label class="custom-checkbox">
+                <input type="checkbox" id="settingMaintenance">
+                <span>Enable Emergency Maintenance Mode (Blocks non-admin player actions)</span>
+              </label>
+            </div>
+
+            <button type="submit" class="admin-gold-btn" style="margin-top: 14px;">Save Platform Settings</button>
+          </form>
+        </div>
+
+        <!-- CARD 3: ADMIN CREDENTIALS -->
+        <div class="card-panel-emerald">
+          <div class="panel-header-row">
+            <div class="panel-title-group">
+              <span class="panel-icon">🔐</span>
+              <h3 class="panel-title-text">Administrator Credentials & Access</h3>
+            </div>
+          </div>
+
+          <form class="platform-settings-form" onsubmit="handleSaveAdminPass(event)">
+            <div class="settings-three-col">
+              <div class="form-group-block">
+                <label>Admin Username:</label>
+                <input type="text" id="settingAdminUser" class="emerald-input" value="admin" required>
+              </div>
+              <div class="form-group-block">
+                <label>New Password:</label>
+                <input type="password" id="settingAdminPass" class="emerald-input" placeholder="At least 6 characters" required>
+              </div>
+              <div class="form-group-block">
+                <label>Confirm Password:</label>
+                <input type="password" id="settingAdminPassConfirm" class="emerald-input" placeholder="Re-type password" required>
+              </div>
+            </div>
+            <button type="submit" class="btn-pill-action" style="margin-top: 14px;">Update Administrator Password</button>
+          </form>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: ADJUST USER BALANCE                                -->
+  <!-- ======================================================== -->
+  <div id="modalBalance" class="admin-modal-overlay">
+    <div class="admin-modal-card">
+      <div class="modal-header">
+        <h3>Adjust Player Balance</h3>
+        <button class="modal-close" onclick="closeBalanceModal()">&times;</button>
+      </div>
+      <form onsubmit="handleExecuteBalance(event)" class="modal-form">
+        <div class="form-group">
+          <label>Player UID</label>
+          <input type="text" id="modalBalUid" class="emerald-input" placeholder="User UID" required>
+        </div>
+
+        <div class="form-group">
+          <label>Adjustment Type</label>
+          <select id="modalBalAction" class="emerald-input">
+            <option value="add">+ Add Balance (Credit)</option>
+            <option value="deduct">- Deduct Balance (Debit)</option>
+            <option value="set">= Set Exact Balance</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Amount (₹)</label>
+          <input type="number" id="modalBalAmount" class="emerald-input" min="1" step="0.01" placeholder="e.g. 500" required>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeBalanceModal()">Cancel</button>
+          <button type="submit" class="admin-gold-btn">Execute Adjustment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: REJECT TRANSACTION WITH REASON                     -->
+  <!-- ======================================================== -->
+  <div id="modalReject" class="admin-modal-overlay">
+    <div class="admin-modal-card">
+      <div class="modal-header">
+        <h3 id="modalRejectTitle">Reject Order</h3>
+        <button class="modal-close" onclick="closeRejectModal()">&times;</button>
+      </div>
+      <form onsubmit="handleExecuteReject(event)" class="modal-form">
+        <input type="hidden" id="rejectOrderId">
+        <input type="hidden" id="rejectType">
+
+        <p class="modal-desc" id="rejectOrderDesc">Order details here...</p>
+
+        <div class="form-group">
+          <label>Rejection Reason (Shown to Player)</label>
+          <select id="rejectPresetReason" class="emerald-input" onchange="applyPresetReason(this.value)">
+            <option value="UTR number not verified or duplicate">UTR number not verified or duplicate</option>
+            <option value="Payment not received in platform account">Payment not received in platform account</option>
+            <option value="Incorrect transfer amount">Incorrect transfer amount</option>
+            <option value="Beneficiary bank account IFSC details incorrect">Beneficiary bank account IFSC details incorrect</option>
+            <option value="Turnover requirement not fulfilled">Turnover requirement not fulfilled</option>
+            <option value="custom">Other reason (Type below)...</option>
+          </select>
+          <input type="text" id="rejectCustomReason" class="emerald-input" placeholder="Specify custom reason" style="margin-top: 8px;">
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeRejectModal()">Cancel</button>
+          <button type="submit" class="btn-pill-reject" style="padding: 10px 18px;">Confirm Rejection</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="adminToastContainer" class="admin-toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="admin.js"></script>
+  <script>
+    // RAXI WIN Splash Loader — hide after page loads
+    window.addEventListener('load', function () {
+      const splash = document.getElementById('raxiSplashLoader');
+      if (splash) {
+        setTimeout(function () {
+          splash.classList.add('raxi-splash-hide');
+          setTimeout(function () { splash.style.display = 'none'; }, 600);
+        }, 1800);
+      }
+    });
+  </script>
+</body>
+</html>

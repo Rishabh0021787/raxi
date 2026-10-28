@@ -1,0 +1,332 @@
+{
+  "settings": {
+    "telegram_support": "https://t.me/raxi_vip_support",
+    "telegram_channel": "https://t.me/raxi_official_channel",
+    "upi_id": "anoctic@okaxis",
+    "min_deposit": 300,
+    "min_withdraw": 200,
+    "admin_user": "admin",
+    "admin_pass": "Ha@030506",
+    "maintenance_mode": false,
+    "announcement": "Welcome to RAXI.WIN! Instant UPI deposits & fast withdrawals enabled 24/7.",
+    "payee_name": "RaxiWin Official",
+    "qr_image": "/qr_upi.svg",
+    "qr_mode": "dynamic"
+  },
+  "users": [
+    {
+      "uid": "951603",
+      "username": "MEMBERNNG1VNAE",
+      "phone": "+91 9876543210",
+      "email": "player951603@yaarwin.com",
+      "balance": 2000,
+      "vip": "VIP0",
+      "status": "Active",
+      "createdAt": "2026-10-27 18:30:00",
+      "lastLogin": "2026-10-28 01:45:00"
+    },
+    {
+      "uid": "943766",
+      "username": "MEMBERNNGLBJCV",
+      "phone": "+91 9811223344",
+      "email": "user943766@yaarwin.com",
+      "balance": 2450,
+      "vip": "VIP2",
+      "status": "Active",
+      "createdAt": "2026-10-25 14:20:10",
+      "lastLogin": "2026-10-28 00:15:22"
+    },
+    {
+      "uid": "928114",
+      "username": "MEMBER789KLA",
+      "phone": "+91 9755443322",
+      "email": "vip_player@gmail.com",
+      "balance": 8700,
+      "vip": "VIP4",
+      "status": "Active",
+      "createdAt": "2026-10-20 11:05:44",
+      "lastLogin": "2026-10-27 22:50:11"
+    },
+    {
+      "uid": "123456",
+      "username": "MEMBERNNG1VNAE",
+      "phone": "+91 9876543210",
+      "email": "player951603@yaarwin.com",
+      "balance": 1000,
+      "vip": "VIP0",
+      "status": "Active",
+      "createdAt": "2026-10-28 06:32:52",
+      "lastLogin": "2026-10-28 06:32:52"
+    },
+    {
+      "uid": "675417",
+      "username": "MEMBERNNG1VNAE",
+      "phone": "+91 9876543210",
+      "email": "player951603@yaarwin.com",
+      "balance": 500,
+      "vip": "VIP0",
+      "status": "Active",
+      "createdAt": "2026-10-28 08:06:46",
+      "lastLogin": "2026-10-28 08:06:46"
+    },
+    {
+      "uid": "322665",
+      "username": "MEMBERNNG1VNAE",
+      "phone": "+91 9876543210",
+      "email": "player951603@yaarwin.com",
+      "balance": 0,
+      "vip": "VIP0",
+      "status": "Active",
+      "createdAt": "2026-10-28 08:41:50",
+      "lastLogin": "2026-10-28 08:41:50"
+    }
+  ],
+  "deposits": [
+    {
+      "orderId": "RC2026102813413872ra14",
+      "uid": "675417",
+      "username": "MEMBERNNG1VNAE",
+      "amount": 500,
+      "type": "Phonepe_QR",
+      "utr": "123123123123",
+      "time": "2026-10-28 13:41:38",
+      "status": "Approved",
+      "reason": "Payment Verified by Admin"
+    },
+    {
+      "orderId": "RC20261028134024xu08ch",
+      "uid": "675417",
+      "username": "MEMBERNNG1VNAE",
+      "amount": 1000,
+      "type": "Phonepe_QR",
+      "utr": "123123123123",
+      "time": "2026-10-28 13:40:24",
+      "status": "Approved",
+      "reason": "Payment Verified by Admin"
+    },
+    {
+      "orderId": "RC20261028133803fx6zzn",
+      "uid": "951603",
+      "username": "MEMBERNNG1VNAE",
+      "amount": 500,
+      "type": "Phonepe_QR",
+      "utr": "123123123123",
+      "time": "2026-10-28 13:38:03",
+      "status": "Approved",
+      "reason": "Payment Verified by Admin"
+    },
+    {
+      "orderId": "RC20261028133718ajd0ak",
+      "uid": "951603",
+      "username": "MEMBERNNG1VNAE",
+      "amount": 500,
+      "type": "Phonepe_QR",
+      "utr": "123123123123",
+      "time": "2026-10-28 13:37:18",
+      "status": "Approved",
+      "reason": "Payment Verified by Admin"
+    },
+    {
+      "orderId": "RC20261028133539uuet7u",
+      "uid": "951603",
+      "username": "MEMBERNNG1VNAE",
+      "amount": 300,
+      "type": "Phonepe_QR",
+      "utr": "123123123123",
+      "time": "2026-10-28 13:35:39",
+      "status": "Approved",
+      "reason": "Payment Verified by Admin"
+    },
+    {
+      "orderId": "RC20261028120447d68u45",
+      "uid": "951603",
+      "username": "MEMBERNNG1VNAE",
+      "amount": 300,
+      "type": "Phonepe_QR",
+      "utr": "123123123123",
+      "time": "2026-10-28 12:04:47",
+      "status": "Approved",
+      "reason": "Payment Verified by Admin"
+    },
+    {
+      "orderId": "RC202610280320360j6knm",
+      "uid": "951603",
+      "username": "MEMBERNNG1VNAE",
+      "amount": 500,
+      "type": "Phonepe_QR",
+      "utr": "879879987987",
+      "time": "2026-10-28 03:20:36",
+      "status": "Approved",
+      "reason": "Payment Verified by Admin"
+    },
+    {
+      "orderId": "RC20261028031838bitz4k",
+      "uid": "951603",
+      "username": "MEMBERNNG1VNAE",
+      "amount": 300,
+      "type": "Phonepe_QR",
+      "utr": "123456789456",
+      "time": "2026-10-28 03:18:38",
+      "status": "Approved",
+      "reason": "Payment Verified by Admin"
+    },
+    {
+      "orderId": "RC2026102802420695eylt",
+      "uid": "951603",
+      "username": "MEMBERNNG1VNAE",
+      "amount": 500,
+      "type": "Phonepe_QR",
+      "utr": "428861018757",
+      "time": "2026-10-28 02:42:06",
+      "status": "Approved",
+      "reason": "Payment Verified by Admin"
+    },
+    {
+      "orderId": "RC20261028004245511096750b",
+      "uid": "951603",
+      "username": "MEMBERNNG1VNAE",
+      "amount": 100,
+      "type": "UPI-QR",
+      "utr": "428819203912",
+      "time": "2026-10-28 00:42:45",
+      "status": "Approved",
+      "reason": "Payment Verified by Admin"
+    },
+    {
+      "orderId": "RC20261028004019911096712b",
+      "uid": "951603",
+      "username": "MEMBERNNG1VNAE",
+      "amount": 500,
+      "type": "Phonepe_QR",
+      "utr": "428809182341",
+      "time": "2026-10-28 00:40:19",
+      "status": "Approved",
+      "reason": "Payment verified"
+    },
+    {
+      "orderId": "RC20261028003942201096979c",
+      "uid": "951603",
+      "username": "MEMBERNNG1VNAE",
+      "amount": 1000,
+      "type": "Phonepe_QR",
+      "utr": "428800192837",
+      "time": "2026-10-28 00:39:42",
+      "status": "Rejected",
+      "reason": "UTR not matching bank statement"
+    }
+  ],
+  "withdrawals": [
+    {
+      "orderId": "WD20261028134055f7cdf4",
+      "uid": "675417",
+      "username": "MEMBERNNG1VNAE",
+      "amount": 2000,
+      "type": "ARPay",
+      "beneficiary": {
+        "type": "UPI",
+        "name": "Rohan Sharma",
+        "upiId": "rohan@okhdfcbank",
+        "phone": "+91 9876543210"
+      },
+      "time": "2026-10-28 13:40:55",
+      "status": "Approved",
+      "reason": "Transfer Completed"
+    },
+    {
+      "orderId": "WD202610280320526zom95",
+      "uid": "951603",
+      "username": "MEMBERNNG1VNAE",
+      "amount": 500,
+      "type": "ARPay",
+      "beneficiary": {
+        "type": "UPI",
+        "name": "Rohan Sharma",
+        "phone": "+91 98765",
+        "upiId": "rohan@okhdfcbank"
+      },
+      "time": "2026-10-28 03:20:52",
+      "status": "Approved",
+      "reason": "Transfer Completed"
+    },
+    {
+      "orderId": "WD202610280242065idxo5",
+      "uid": "951603",
+      "username": "MEMBERNNG1VNAE",
+      "amount": 250,
+      "type": "UPI",
+      "beneficiary": {
+        "name": "Rohan Sharma",
+        "upiId": "rohan@okhdfcbank"
+      },
+      "time": "2026-10-28 02:42:06",
+      "status": "Rejected",
+      "reason": "Beneficiary name mismatch with bank record"
+    },
+    {
+      "orderId": "WD2026102800551098231a",
+      "uid": "951603",
+      "username": "MEMBERNNG1VNAE",
+      "amount": 500,
+      "type": "UPI",
+      "beneficiary": {
+        "name": "Rohan Sharma",
+        "upiId": "rohan@okhdfcbank",
+        "phone": "+91 9876543210"
+      },
+      "time": "2026-10-28 00:55:10",
+      "status": "Approved",
+      "reason": "Transfer Completed"
+    },
+    {
+      "orderId": "WD2026102722104518293b",
+      "uid": "943766",
+      "username": "MEMBERNNGLBJCV",
+      "amount": 1200,
+      "type": "BANK CARD",
+      "beneficiary": {
+        "name": "Aakash Patel",
+        "account": "50100492817291",
+        "ifsc": "HDFC0001234",
+        "bank": "HDFC Bank",
+        "phone": "+91 9811223344"
+      },
+      "time": "2026-10-27 22:10:45",
+      "status": "Approved",
+      "reason": "IMPS transfer successful"
+    }
+  ],
+  "gift_codes": [
+    {
+      "id": "GC_1793173724504",
+      "code": "BONUS2026",
+      "bonus": 250,
+      "claimsUsed": 1,
+      "maxClaims": 100,
+      "status": "Active",
+      "claimedBy": [
+        "951603"
+      ],
+      "createdAt": "2026-10-28 07:48:44"
+    },
+    {
+      "id": "GC_1",
+      "code": "DMFIRSTVIP",
+      "bonus": 100,
+      "claimsUsed": 14,
+      "maxClaims": 500,
+      "status": "Active",
+      "claimedBy": [],
+      "createdAt": "2026-10-28 10:00:00"
+    },
+    {
+      "id": "GC_2",
+      "code": "WELCOME50",
+      "bonus": 50,
+      "claimsUsed": 88,
+      "maxClaims": 1000,
+      "status": "Active",
+      "claimedBy": [],
+      "createdAt": "2026-10-28 09:30:00"
+    }
+  ]
+}

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>RAXI .WIN - Register</title>
+  
+  <!-- Roboto Font Family -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400;1,700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Mobile Viewport Container -->
+  <div class="app-container">
+    <!-- Header -->
+    <div class="auth-header">
+      <div class="auth-header-nav">
+        <button class="back-btn" onclick="window.location.href='login.html'" title="Back to Login">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+
+        <!-- RAXI .WIN Logo -->
+        <div class="logo-container" onclick="window.location.href='login.html'">
+          <img src="logo.png" alt="RAXI .WIN" class="main-logo-img">
+        </div>
+
+        <!-- Language Selector -->
+        <div class="lang-selector" title="Language">
+          <svg viewBox="0 0 32 32" class="flag-icon">
+            <clipPath id="circleClipReg">
+              <circle cx="16" cy="16" r="16" />
+            </clipPath>
+            <g clip-path="url(#circleClipReg)">
+              <rect width="32" height="32" fill="#B22234" />
+              <rect y="2.46" width="32" height="2.46" fill="#FFFFFF" />
+              <rect y="7.38" width="32" height="2.46" fill="#FFFFFF" />
+              <rect y="12.3" width="32" height="2.46" fill="#FFFFFF" />
+              <rect y="17.22" width="32" height="2.46" fill="#FFFFFF" />
+              <rect y="22.14" width="32" height="2.46" fill="#FFFFFF" />
+              <rect y="27.06" width="32" height="2.46" fill="#FFFFFF" />
+              <rect width="14" height="14.76" fill="#3C3B6E" />
+              <circle cx="3" cy="3" r="1" fill="#FFFFFF" />
+              <circle cx="7" cy="3" r="1" fill="#FFFFFF" />
+              <circle cx="11" cy="3" r="1" fill="#FFFFFF" />
+              <circle cx="5" cy="6" r="1" fill="#FFFFFF" />
+              <circle cx="9" cy="6" r="1" fill="#FFFFFF" />
+              <circle cx="3" cy="9" r="1" fill="#FFFFFF" />
+              <circle cx="7" cy="9" r="1" fill="#FFFFFF" />
+              <circle cx="11" cy="9" r="1" fill="#FFFFFF" />
+            </g>
+          </svg>
+          <span>EN</span>
+        </div>
+      </div>
+
+      <div class="auth-header-text">
+        <h1 class="auth-title">Register</h1>
+        <p class="auth-subtitle">
+          Please register by phone number or email
+        </p>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="auth-content">
+      <!-- Tab -->
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab active" style="cursor: default;">
+          <svg viewBox="0 0 24 24">
+            <rect x="5" y="2" width="14" height="20" rx="3" ry="3" fill="none" stroke="currentColor" stroke-width="2"/>
+            <line x1="12" y1="18" x2="12.01" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>Register your phone</span>
+        </button>
+      </div>
+
+      <!-- Form -->
+      <form class="auth-form" onsubmit="handleRegister(event)">
+        <!-- Phone Number -->
+        <div class="form-group">
+          <div class="form-label">
+            <div class="form-label-icon">
+              <svg viewBox="0 0 24 24">
+                <rect x="6" y="2" width="12" height="20" rx="3" fill="var(--accent-red)"/>
+                <rect x="8" y="5" width="8" height="11" rx="1" fill="#ffffff"/>
+                <circle cx="12" cy="19" r="1" fill="#ffffff"/>
+              </svg>
+            </div>
+            <span>Phone number</span>
+          </div>
+
+          <div class="input-row">
+            <button type="button" class="country-code-btn" onclick="openCountryModal()">
+              <span class="current-country-code">+91</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div class="input-wrapper">
+              <input type="tel" id="registerIdentifier" class="input-field" placeholder="Please enter the phone number" autocomplete="tel">
+            </div>
+          </div>
+        </div>
+
+        <!-- Set Password -->
+        <div class="form-group">
+          <div class="form-label">
+            <div class="form-label-icon">
+              <svg viewBox="0 0 24 24">
+                <path d="M19 11H5c-1.1 0-2 .9-2 2v7c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7c0-1.1-.9-2-2-2z" fill="var(--accent-red)"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" fill="none" stroke="var(--accent-red)" stroke-width="2.5" stroke-linecap="round"/>
+                <circle cx="12" cy="16" r="1.5" fill="#ffffff"/>
+              </svg>
+            </div>
+            <span>Set password</span>
+          </div>
+
+          <div class="input-row">
+            <div class="input-wrapper">
+              <input type="password" id="registerPassword" class="input-field" placeholder="Set password" autocomplete="new-password">
+              <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('registerPassword', this)" title="Show/Hide Password">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="form-group">
+          <div class="form-label">
+            <div class="form-label-icon">
+              <svg viewBox="0 0 24 24">
+                <path d="M19 11H5c-1.1 0-2 .9-2 2v7c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7c0-1.1-.9-2-2-2z" fill="var(--accent-red)"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" fill="none" stroke="var(--accent-red)" stroke-width="2.5" stroke-linecap="round"/>
+                <circle cx="12" cy="16" r="1.5" fill="#ffffff"/>
+              </svg>
+            </div>
+            <span>Confirm password</span>
+          </div>
+
+          <div class="input-row">
+            <div class="input-wrapper">
+              <input type="password" id="registerConfirmPassword" class="input-field" placeholder="Confirm password" autocomplete="new-password">
+              <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('registerConfirmPassword', this)" title="Show/Hide Password">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Invite Code -->
+        <div class="form-group">
+          <div class="form-label">
+            <div class="form-label-icon">
+              <svg viewBox="0 0 24 24">
+                <path d="M20 12V8H4v4c1.1 0 2 .9 2 2s-.9 2-2 2v4h16v-4c-1.1 0-2-.9-2-2s.9-2 2-2z" fill="var(--accent-red)"/>
+                <circle cx="12" cy="14" r="2" fill="#ffffff"/>
+              </svg>
+            </div>
+            <span>Invite code</span>
+          </div>
+
+          <div class="input-row">
+            <div class="input-wrapper">
+              <input type="text" id="registerInviteCode" class="input-field" value="287520774542" placeholder="Please enter invite code">
+            </div>
+          </div>
+        </div>
+
+        <!-- Privacy Agreement -->
+        <div class="agreement-row" onclick="toggleCheckbox('registerAgreementCheckbox')">
+          <div class="custom-checkbox checked" id="registerAgreementCheckbox">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <span class="agreement-text">
+            I have read and agree <a class="privacy-link" onclick="openPrivacyModal(event)">【Privacy Agreement】</a>
+          </span>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="auth-actions">
+          <button type="submit" class="btn-primary">
+            Register
+          </button>
+          <button type="button" class="btn-outline" onclick="window.location.href='login.html'">
+            <span class="sub-text">I have an account</span>
+            <span class="highlight-text">Login</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Country Modal -->
+  <div id="countryModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">Select Country / Region</div>
+        <button class="modal-close-btn" onclick="closeCountryModal()">✕</button>
+      </div>
+      <div class="modal-search">
+        <input type="text" id="countrySearchInput" placeholder="Search country or code...">
+      </div>
+      <div class="modal-list" id="countryList"></div>
+    </div>
+  </div>
+
+  <!-- Privacy Modal -->
+  <div id="privacyModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">Privacy Agreement</div>
+        <button class="modal-close-btn" onclick="closePrivacyModal()">✕</button>
+      </div>
+      <div class="privacy-card-body">
+        <p><strong>1. Information Collection</strong><br>
+        We respect your privacy and are committed to protecting your personal information. When registering on RAXI .WIN, we collect minimal necessary data including mobile number and login credentials for security verification.</p>
+        <br>
+        <p><strong>2. Account Security</strong><br>
+        Your password is encrypted. You are responsible for maintaining the confidentiality of your account password and invite code. Never share your verification code with anyone.</p>
+      </div>
+      <div style="padding: 14px 20px; border-top: 1px solid #e2e8f0;">
+        <button class="btn-primary" onclick="closePrivacyModal()">I Understand & Agree</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    function toggleCheckbox(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('checked');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "yaarwin-auth",
+  "version": "1.0.0",
+  "description": "Yaar Win Auth System (Login, Register, Working Forgot Password, Telegram Support)",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.22.0"
+  }
+}

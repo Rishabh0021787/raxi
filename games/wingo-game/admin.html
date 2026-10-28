@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="refresh" content="0; url=/admin">
+  <title>Redirecting to Central Admin Console...</title>
+  <script>
+    window.location.replace('/admin');
+  </script>
+</head>
+<body style="background:#0c0205;color:#fff;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;">
+  <p>Admin panel has moved to the central dashboard. Redirecting to <a href="/admin" style="color:#ff5757;">/admin</a>...</p>
+</body>
+</html>
+
+    <!-- 4 Game Selector Bar -->
+    <div class="game-selector-bar">
+      <button class="btn-select-game active" data-game="30s">
+        <span>WinGo 30sec</span>
+        <span class="game-timer-sub" id="tabTimer30s">--s</span>
+      </button>
+      <button class="btn-select-game" data-game="1m">
+        <span>WinGo 1 Min</span>
+        <span class="game-timer-sub" id="tabTimer1m">--s</span>
+      </button>
+      <button class="btn-select-game" data-game="3m">
+        <span>WinGo 3 Min</span>
+        <span class="game-timer-sub" id="tabTimer3m">--s</span>
+      </button>
+      <button class="btn-select-game" data-game="5m">
+        <span>WinGo 5 Min</span>
+        <span class="game-timer-sub" id="tabTimer5m">--s</span>
+      </button>
+    </div>
+
+    <!-- Active Game Period & Timer Status -->
+    <section class="admin-card">
+      <div class="card-title">
+        <span id="activeGameTitle">WinGo 30sec - Live Status</span>
+        <span class="stat-badge open" id="periodStatusBadge">Betting Open</span>
+      </div>
+      <div class="round-status-grid">
+        <div class="status-stat-box">
+          <div class="stat-label">Current Period</div>
+          <div class="stat-value" id="adminPeriodDisplay">---</div>
+        </div>
+        <div class="status-stat-box">
+          <div class="stat-label">Countdown Remaining</div>
+          <div class="stat-value" id="adminTimerDisplay" style="color: #38bdf8;">--s</div>
+        </div>
+        <div class="status-stat-box">
+          <div class="stat-label">Active Bets Placed</div>
+          <div class="stat-value" id="adminBetsCount" style="color: #34d399;">0</div>
+        </div>
+        <div class="status-stat-box">
+          <div class="stat-label">Player Wallet Balance</div>
+          <div class="stat-value" id="adminWalletDisplay" style="color: #fbbf24;">₹0.00</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MASTER OUTCOME MANIPULATION PANEL -->
+    <section class="admin-card outcome-control-panel">
+      <div class="card-title">
+        <span style="color: #38bdf8; font-size: 19px;">🎮 Next Outcome Controller (Full Override)</span>
+        <span id="currentModeLabel" style="font-size: 13px; color: #94a3b8;">Mode: Automatic (Fair RNG)</span>
+      </div>
+
+      <!-- 1. Manipulate By Color -->
+      <div class="control-group-title">Option A: Manipulate by Color</div>
+      <div class="manipulation-row">
+        <button class="btn-manipulate btn-force-green" data-force-color="green">
+          <span>🟢 Force Green</span>
+        </button>
+        <button class="btn-manipulate btn-force-violet" data-force-color="violet">
+          <span>🟣 Force Violet</span>
+        </button>
+        <button class="btn-manipulate btn-force-red" data-force-color="red">
+          <span>🔴 Force Red</span>
+        </button>
+      </div>
+
+      <!-- 2. Manipulate By Size -->
+      <div class="control-group-title">Option B: Manipulate by Size (Big / Small)</div>
+      <div class="manipulation-row">
+        <button class="btn-manipulate btn-force-big" data-force-size="Big">
+          <span>🟠 Force BIG (5-9)</span>
+        </button>
+        <button class="btn-manipulate btn-force-small" data-force-size="Small">
+          <span>🔵 Force SMALL (0-4)</span>
+        </button>
+      </div>
+
+      <!-- 3. Smart Combo Overrides -->
+      <div class="control-group-title">Option C: Combined Smart Presets (Color + Size)</div>
+      <div class="combined-presets-grid">
+        <button class="btn-preset" data-combo-color="green" data-combo-size="Big">🟢 Green + Big (7, 9)</button>
+        <button class="btn-preset" data-combo-color="green" data-combo-size="Small">🟢 Green + Small (1, 3)</button>
+        <button class="btn-preset" data-combo-color="red" data-combo-size="Big">🔴 Red + Big (6, 8)</button>
+        <button class="btn-preset" data-combo-color="red" data-combo-size="Small">🔴 Red + Small (2, 4)</button>
+        <button class="btn-preset" data-combo-color="violet" data-combo-size="Big">🟣 Violet + Big (5)</button>
+        <button class="btn-preset" data-combo-color="violet" data-combo-size="Small">🟣 Violet + Small (0)</button>
+      </div>
+
+      <!-- 4. Manipulate by Exact Number 0-9 -->
+      <div class="control-group-title">Option D: Manipulate by Exact Number (0 to 9)</div>
+      <div class="balls-grid-admin">
+        <button class="admin-ball-btn violet-red" data-num="0" title="0 (Red+Violet, Small)">0</button>
+        <button class="admin-ball-btn green" data-num="1" title="1 (Green, Small)">1</button>
+        <button class="admin-ball-btn red" data-num="2" title="2 (Red, Small)">2</button>
+        <button class="admin-ball-btn green" data-num="3" title="3 (Green, Small)">3</button>
+        <button class="admin-ball-btn red" data-num="4" title="4 (Red, Small)">4</button>
+        <button class="admin-ball-btn violet-green" data-num="5" title="5 (Green+Violet, Big)">5</button>
+        <button class="admin-ball-btn red" data-num="6" title="6 (Red, Big)">6</button>
+        <button class="admin-ball-btn green" data-num="7" title="7 (Green, Big)">7</button>
+        <button class="admin-ball-btn red" data-num="8" title="8 (Red, Big)">8</button>
+        <button class="admin-ball-btn green" data-num="9" title="9 (Green, Big)">9</button>
+      </div>
+
+      <!-- Active Override Status Card -->
+      <div class="current-override-status">
+        <div class="override-info">
+          <div class="override-target-ball" id="targetBallDisplay">?</div>
+          <div>
+            <div style="font-weight: 800; font-size: 16px;" id="overrideStatusText">
+              Next Outcome: Random Fair RNG
+            </div>
+            <div style="font-size: 12px; color: #94a3b8; font-weight: 600;" id="overrideSubtext">
+              Server will choose a fair random outcome.
+            </div>
+          </div>
+        </div>
+        <button class="btn-reset-override" id="btnResetOverride">🎲 Reset to Random RNG</button>
+      </div>
+    </section>
+
+    <!-- Real-Time Bet Pool Summary for Active Game -->
+    <section class="admin-card">
+      <div class="card-title">
+        <span>📊 Current Period Bet Pool Summary</span>
+        <span id="totalPoolDisplay" style="color: #38bdf8; font-weight: 900;">Total Pool: ₹0.00</span>
+      </div>
+
+      <div class="pool-breakdown-grid">
+        <div class="pool-box green">
+          <div class="pool-title">Green Pool</div>
+          <div class="pool-amount" id="poolGreen">₹0.00</div>
+        </div>
+        <div class="pool-box violet">
+          <div class="pool-title">Violet Pool</div>
+          <div class="pool-amount" id="poolViolet">₹0.00</div>
+        </div>
+        <div class="pool-box red">
+          <div class="pool-title">Red Pool</div>
+          <div class="pool-amount" id="poolRed">₹0.00</div>
+        </div>
+        <div class="pool-box big">
+          <div class="pool-title">Big Pool</div>
+          <div class="pool-amount" id="poolBig">₹0.00</div>
+        </div>
+        <div class="pool-box small">
+          <div class="pool-title">Small Pool</div>
+          <div class="pool-amount" id="poolSmall">₹0.00</div>
+        </div>
+      </div>
+
+      <div style="max-height: 250px; overflow-y: auto;">
+        <table class="bets-table">
+          <thead>
+            <tr>
+              <th>Bet ID</th>
+              <th>Period</th>
+              <th>Type</th>
+              <th>Selection</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="adminBetsTableBody">
+            <tr>
+              <td colspan="6" style="text-align: center; color: #64748b; padding: 14px;">No active bets for current period</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Test Wallet Manager -->
+    <section class="admin-card">
+      <div class="card-title">
+        <span>💳 Test Wallet Management</span>
+      </div>
+      <p style="font-size: 13px; color: #94a3b8; margin-bottom: 12px; font-weight: 600;">
+        Adjust or reset the test player wallet across all 4 games:
+      </p>
+      <div class="wallet-mgr-actions">
+        <button class="btn-wallet-action" data-add="500">+ ₹500</button>
+        <button class="btn-wallet-action" data-add="1000">+ ₹1,000</button>
+        <button class="btn-wallet-action" data-add="5000">+ ₹5,000</button>
+        <button class="btn-wallet-action" id="btnResetWallet" style="background: #dc2626;">Reset to ₹1,000</button>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="admin-toast" id="adminToast">Outcome Updated</div>
+
+  <script src="js/admin.js"></script>
+</body>
+</html>

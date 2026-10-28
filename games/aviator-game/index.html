@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AviatorX - Play Online Crash Game</title>
+  <!-- Roboto Font Family -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,700;1,900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ============================================================
+       TOP NAVIGATION BAR
+       ============================================================ -->
+  <header class="top-nav">
+    <div class="nav-left">
+      <button class="how-to-play-btn" style="background:#fa484c; color:#fff; border-color:#fa484c; margin-right:6px;" onclick="if(window.parent && typeof window.parent.closeInAppGame==='function'){window.parent.closeInAppGame();}else{window.history.back();}">
+        ✕ Back
+      </button>
+      <div class="brand-logo" onclick="location.reload()">
+        <span class="logo-text">Aviator<span class="logo-x">X</span></span>
+      </div>
+      <button id="howToPlayBtn" class="how-to-play-btn">
+        How To Play ?
+      </button>
+    </div>
+
+    <div class="nav-right">
+      <div class="wifi-indicator" title="Connected to Server">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
+          <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
+          <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+          <line x1="12" y1="20" x2="12.01" y2="20"></line>
+        </svg>
+      </div>
+
+      <div class="balance-box">
+        <button id="reloadBalanceBtn" class="reload-balance-btn" title="Refresh Balance">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+          </svg>
+        </button>
+        <span id="userBalance" class="balance-amount">Loading...</span>
+      </div>
+
+      <button id="fullscreenBtn" class="nav-icon-btn" title="Toggle Fullscreen" onclick="if(!document.fullscreenElement){document.documentElement.requestFullscreen();}else{document.exitFullscreen();}">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 3 21 3 21 9"></polyline>
+          <polyline points="9 21 3 21 3 15"></polyline>
+          <line x1="21" y1="3" x2="14" y2="10"></line>
+          <line x1="3" y1="21" x2="10" y2="14"></line>
+        </svg>
+      </button>
+
+      <button id="menuBtn" class="nav-icon-btn" title="Game Settings">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       MAIN CONTENT CONTAINER
+       ============================================================ -->
+  <main class="app-container">
+
+    <!-- LEFT SIDEBAR: LIVE BETS -->
+    <aside class="sidebar-panel">
+      <div class="sidebar-tabs">
+        <button id="tabAllBets" class="sidebar-tab active">All Bets</button>
+        <button id="tabMyBets" class="sidebar-tab">My Bet</button>
+      </div>
+
+      <div class="bets-header-info">
+        <span class="bets-header-title">ALL BETS</span>
+        <span id="allBetsCount" class="bets-count">453</span>
+      </div>
+
+      <div class="bets-table-header">
+        <div>User</div>
+        <div>Bet(₹)</div>
+        <div>X</div>
+        <div>Cash out(₹)</div>
+      </div>
+
+      <div id="betsList" class="bets-list"></div>
+
+      <div id="provablyFairLink" class="sidebar-footer">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+        </svg>
+        <span>This game is <span class="fair-link">Provably fair</span></span>
+      </div>
+    </aside>
+
+    <!-- RIGHT MAIN WORKSPACE -->
+    <section class="workspace-main">
+
+      <!-- Multiplier History Bar -->
+      <div class="history-bar">
+        <div id="historyList" class="history-list"></div>
+        <button class="history-more-btn" title="Past Multipliers">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Game Flight Arena -->
+      <div class="game-arena-wrapper">
+        <canvas id="flightCanvas"></canvas>
+
+        <div class="arena-overlay-center">
+          <div id="multiplierText" class="multiplier-display">1.00x</div>
+          <div id="flewAwayText" class="flew-away-text">FLEW AWAY!</div>
+        </div>
+
+        <div id="waitingOverlay" class="waiting-overlay">
+          <div class="waiting-title">WAITING FOR NEXT ROUND</div>
+          <div class="countdown-bar-outer">
+            <div id="countdownBar" class="countdown-bar-inner"></div>
+          </div>
+        </div>
+
+        <div id="audioHint" class="audio-hint-banner">
+          <span>🔊 Click anywhere to enable Music & Sound Effects</span>
+        </div>
+
+        <div class="round-id-bar">
+          <span id="roundIdText">Round Id: loading...</span>
+          <span style="color: #64748b;">SHA-256 Fair Verified</span>
+        </div>
+      </div>
+
+      <!-- Dual Betting Panels -->
+      <div class="betting-panels-container">
+
+        <!-- BET PANEL 1 -->
+        <div id="betCard1" class="bet-card">
+          <div class="bet-card-header">
+            <div class="bet-mode-switch">
+              <button id="modeBet1" class="mode-btn active">Bet</button>
+              <button id="modeAuto1" class="mode-btn">Auto</button>
+            </div>
+          </div>
+          <div class="bet-card-body">
+            <div class="bet-input-section">
+              <div class="amount-stepper">
+                <button id="minusBtn1" class="stepper-btn">−</button>
+                <input id="betAmountInput1" type="number" step="10" min="10" value="50.00" class="amount-input">
+                <button id="plusBtn1" class="stepper-btn">+</button>
+              </div>
+              <div class="quick-chips-grid">
+                <button class="chip-btn" data-value="100">100</button>
+                <button class="chip-btn" data-value="200">200</button>
+                <button class="chip-btn" data-value="500">500</button>
+                <button class="chip-btn" data-value="1000">1000</button>
+              </div>
+              <div id="autoOptionsRow1" class="auto-options-row">
+                <label style="display:flex;align-items:center;gap:4px;cursor:pointer;">
+                  <input type="checkbox" id="autoCashoutCheck1">
+                  <span>Auto Cash Out</span>
+                </label>
+                <div class="auto-cashout-input-wrap">
+                  <input type="number" id="autoCashoutInput1" value="2.00" step="0.10" min="1.01" class="auto-cashout-input">
+                  <span style="font-weight:700;color:#94a3b8;">x</span>
+                </div>
+              </div>
+            </div>
+            <div class="big-action-btn-wrap">
+              <button id="betBtn1" class="big-action-btn btn-bet">
+                <span id="btnLabelTop1" class="action-label-top">BET</span>
+                <span id="btnLabelSub1" class="action-label-sub">50.00 ₹</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- BET PANEL 2 -->
+        <div id="betCard2" class="bet-card">
+          <div class="bet-card-header">
+            <div class="bet-mode-switch">
+              <button id="modeBet2" class="mode-btn active">Bet</button>
+              <button id="modeAuto2" class="mode-btn">Auto</button>
+            </div>
+            <button id="closeBetCard2" class="bet-card-close-btn" title="Minimize">−</button>
+          </div>
+          <div class="bet-card-body">
+            <div class="bet-input-section">
+              <div class="amount-stepper">
+                <button id="minusBtn2" class="stepper-btn">−</button>
+                <input id="betAmountInput2" type="number" step="10" min="10" value="50.00" class="amount-input">
+                <button id="plusBtn2" class="stepper-btn">+</button>
+              </div>
+              <div class="quick-chips-grid">
+                <button class="chip-btn" data-value="100">100</button>
+                <button class="chip-btn" data-value="200">200</button>
+                <button class="chip-btn" data-value="500">500</button>
+                <button class="chip-btn" data-value="1000">1000</button>
+              </div>
+              <div id="autoOptionsRow2" class="auto-options-row">
+                <label style="display:flex;align-items:center;gap:4px;cursor:pointer;">
+                  <input type="checkbox" id="autoCashoutCheck2">
+                  <span>Auto Cash Out</span>
+                </label>
+                <div class="auto-cashout-input-wrap">
+                  <input type="number" id="autoCashoutInput2" value="2.00" step="0.10" min="1.01" class="auto-cashout-input">
+                  <span style="font-weight:700;color:#94a3b8;">x</span>
+                </div>
+              </div>
+            </div>
+            <div class="big-action-btn-wrap">
+              <button id="betBtn2" class="big-action-btn btn-bet">
+                <span id="btnLabelTop2" class="action-label-top">BET</span>
+                <span id="btnLabelSub2" class="action-label-sub">50.00 ₹</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <button id="addSecondBetBtn" class="add-second-bet-btn">
+          + Add Second Bet Box
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================================================
+       MODAL: HOW TO PLAY
+       ============================================================ -->
+  <div id="howToPlayModal" class="modal-backdrop">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title"><span>✈️</span> How To Play AviatorX</div>
+        <button id="closeHowToPlay" class="modal-close-btn">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="rules-step">
+          <div class="step-num">1</div>
+          <div class="step-text">
+            <h4>Make a Bet</h4>
+            <p>Enter your bet amount and click the green <strong>BET</strong> button before the round starts.</p>
+          </div>
+        </div>
+        <div class="rules-step">
+          <div class="step-num">2</div>
+          <div class="step-text">
+            <h4>Watch the Lucky Plane Take Off</h4>
+            <p>The plane ascends and the multiplier rises from <strong>1.00x</strong>.</p>
+          </div>
+        </div>
+        <div class="rules-step">
+          <div class="step-num">3</div>
+          <div class="step-text">
+            <h4>Cash Out Before the Plane Flies Away!</h4>
+            <p>Click <strong>CASH OUT</strong> to claim <em>Bet × Multiplier</em>. If the plane flies away first, the bet is lost.</p>
+          </div>
+        </div>
+        <div class="rules-step">
+          <div class="step-num">4</div>
+          <div class="step-text">
+            <h4>Auto Cash Out</h4>
+            <p>Switch to <strong>Auto</strong> tab to set an automatic cashout target multiplier.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL: PROVABLY FAIR
+       ============================================================ -->
+  <div id="provablyFairModal" class="modal-backdrop">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title"><span>🛡️</span> Provably Fair</div>
+        <button id="closeProvablyFair" class="modal-close-btn">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="margin-bottom:12px;">AviatorX uses SHA-256 HMAC cryptographic verification. The crash multiplier is determined before each flight and cannot be altered.</p>
+        <div style="background:#0b0c10;border:1px solid #232738;padding:12px;border-radius:8px;font-family:monospace;font-size:11px;word-break:break-all;margin-bottom:12px;">
+          <span style="color:#94a3b8;">Server Seed (SHA-256):</span><br>
+          <span style="color:#38bdf8;">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</span>
+        </div>
+        <p style="font-size:12px;color:#94a3b8;">The formula calculates the crash multiplier from the hex hash with 97% RTP.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL: SETTINGS — Matching the Profile Menu Screenshot
+       ============================================================ -->
+  <div id="menuModal" class="modal-backdrop">
+    <div class="modal-content menu-modal-content">
+
+      <!-- Profile Header (matches screenshot) -->
+      <div class="profile-header">
+        <div class="profile-avatar-wrap">
+          <!-- SVG Person Avatar matching screenshot style -->
+          <div class="profile-avatar-circle">
+            <svg viewBox="0 0 64 64" width="48" height="48" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="32" cy="32" r="32" fill="#2d6a4f"/>
+              <!-- Jacket -->
+              <rect x="12" y="40" width="40" height="24" rx="8" fill="#e63946"/>
+              <!-- Shirt/Tie -->
+              <rect x="28" y="40" width="8" height="18" rx="2" fill="#457b9d"/>
+              <!-- Head -->
+              <circle cx="32" cy="26" r="14" fill="#f4a261"/>
+              <!-- Hair -->
+              <ellipse cx="32" cy="14" rx="14" ry="7" fill="#5c3d11"/>
+            </svg>
+          </div>
+          <div>
+            <div id="profileUsername" class="profile-username">P***r</div>
+            <div class="profile-user-id" id="profileUserId">Demo Mode</div>
+          </div>
+        </div>
+        <button class="change-avatar-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="10"/></svg>
+          Change Avatar
+        </button>
+      </div>
+
+      <!-- Settings Rows (matching screenshot exactly) -->
+      <div class="menu-settings-list">
+
+        <div class="menu-setting-row">
+          <div class="menu-setting-left">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.8"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+            <span>Sound</span>
+          </div>
+          <label class="switch"><input type="checkbox" id="sfxSwitch" checked><span class="slider"></span></label>
+        </div>
+
+        <div class="menu-setting-row">
+          <div class="menu-setting-left">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.8"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            <span>Music</span>
+          </div>
+          <label class="switch"><input type="checkbox" id="musicSwitch" checked><span class="slider"></span></label>
+        </div>
+
+        <div class="menu-setting-row">
+          <div class="menu-setting-left">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+            <span>Animation</span>
+          </div>
+          <label class="switch"><input type="checkbox" id="animationSwitch" checked><span class="slider"></span></label>
+        </div>
+
+        <div class="menu-divider"></div>
+
+        <div class="menu-setting-row menu-link-row" id="provablyFairSettingBtn">
+          <div class="menu-setting-left">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>Provably Fair Setting</span>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+
+        <div class="menu-setting-row menu-link-row" id="gameRulesBtn">
+          <div class="menu-setting-left">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            <span>Game Rules</span>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+
+        <div class="menu-setting-row menu-link-row">
+          <div class="menu-setting-left">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>My Bet History</span>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+
+        <div class="menu-setting-row menu-link-row">
+          <div class="menu-setting-left">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>Game Limits</span>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+
+        <div class="menu-divider"></div>
+
+        <div class="menu-setting-row menu-link-row">
+          <div class="menu-setting-left">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+          </div>
+          <span style="font-weight:700;color:#f59e0b;margin-left:auto;">Language</span>
+        </div>
+
+      </div>
+
+      <button id="closeMenu" class="menu-close-btn">✕ Close</button>
+    </div>
+  </div>
+
+  <!-- Game Scripts -->
+  <script src="js/audio.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/bets.js"></script>
+</body>
+</html>

@@ -1,0 +1,459 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap');
+
+/* =========================================================
+   STRICT BRAND COLOUR PALETTE — DO NOT OVERRIDE
+   ========================================================= */
+:root {
+  --bg-primary:        #2C0001;
+  --bg-secondary:      #3E1919;
+  --bg-panel:          #552122;
+  --accent-red:        #FA484C;
+  --accent-red-dark:   #9D1322;
+  --accent-red-bright: #E52539;
+  --text-primary:      #FFFFFF;
+  --text-secondary:    #D09B9B;
+  --accent-gold:       #EA9B1F;
+  --accent-gold-light: #F5E5A0;
+  --accent-blue:       #0858A9;
+  --accent-green:      #9FD063;
+  --bg-outer:          #9195A3;
+
+  /* Gameplay colour aliases */
+  --game-green:  #18b660;
+  --game-violet: #b259f9;
+  --game-big:    #EA9B1F;
+  --game-small:  #0858A9;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Montserrat', sans-serif;
+}
+
+body {
+  background-color: var(--bg-outer);
+  color: var(--text-primary);
+  min-height: 100vh;
+  padding: 24px 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.admin-container {
+  width: 100%;
+  max-width: 980px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ─── Header ─── */
+.admin-header {
+  background: var(--bg-secondary);
+  border-radius: 18px;
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid var(--bg-panel);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+.header-title-box h1 {
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--accent-gold-light);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-title-box p {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.btn-open-game {
+  background: var(--accent-red);
+  color: var(--text-primary);
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+  box-shadow: 0 4px 14px rgba(250, 72, 76, 0.35);
+}
+
+.btn-open-game:hover {
+  background: var(--accent-red-bright);
+  transform: translateY(-2px);
+}
+
+/* ─── Game Selection Bar ─── */
+.game-selector-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.btn-select-game {
+  background: var(--bg-secondary);
+  border: 1px solid var(--bg-panel);
+  color: var(--text-secondary);
+  padding: 12px 10px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-select-game.active {
+  background: var(--accent-red);
+  border-color: var(--accent-red-bright);
+  color: var(--text-primary);
+  box-shadow: 0 4px 14px rgba(250, 72, 76, 0.4);
+}
+
+.btn-select-game .game-timer-sub {
+  font-size: 11px;
+  font-weight: 700;
+  opacity: 0.85;
+}
+
+/* ─── Admin Cards ─── */
+.admin-card {
+  background: var(--bg-secondary);
+  border-radius: 18px;
+  padding: 22px 24px;
+  border: 1px solid var(--bg-panel);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.card-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--bg-panel);
+  padding-bottom: 12px;
+}
+
+/* ─── Status Grid ─── */
+.round-status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+.status-stat-box {
+  background: var(--bg-primary);
+  border-radius: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--bg-panel);
+}
+
+.stat-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--text-primary);
+}
+
+.stat-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.stat-badge.open   { background: rgba(159, 208, 99, 0.15); color: var(--accent-green); }
+.stat-badge.locked { background: rgba(250, 72, 76, 0.15);  color: var(--accent-red); }
+
+/* ─── Outcome Manipulation Panel ─── */
+.outcome-control-panel {
+  border: 2px solid var(--accent-red);
+  background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+}
+
+.control-group-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--accent-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 14px 0 8px 0;
+}
+
+/* Color & Size Manipulation Buttons */
+.manipulation-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.btn-manipulate {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-manipulate:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.15);
+}
+
+.btn-force-green  { background: var(--game-green); }
+.btn-force-violet { background: var(--game-violet); }
+.btn-force-red    { background: var(--accent-red); }
+.btn-force-big    { background: var(--game-big); }
+.btn-force-small  { background: var(--game-small); }
+
+/* Combined Presets Grid */
+.combined-presets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.btn-preset {
+  background: var(--bg-primary);
+  border: 1px solid var(--bg-panel);
+  color: var(--text-secondary);
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-preset:hover {
+  background: var(--bg-panel);
+  border-color: var(--accent-red);
+  color: var(--text-primary);
+}
+
+/* 10 Ball Buttons Grid in Admin */
+.balls-grid-admin {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.admin-ball-btn {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-ball-btn:hover {
+  transform: scale(1.12);
+}
+
+.admin-ball-btn.green        { background: var(--game-green); }
+.admin-ball-btn.red          { background: var(--accent-red); }
+.admin-ball-btn.violet-red   { background: linear-gradient(135deg, var(--accent-red) 50%, var(--game-violet) 50%); }
+.admin-ball-btn.violet-green { background: linear-gradient(135deg, var(--game-green) 50%, var(--game-violet) 50%); }
+
+.admin-ball-btn.selected {
+  outline: 4px solid var(--accent-gold);
+  box-shadow: 0 0 18px var(--accent-gold);
+  transform: scale(1.18);
+}
+
+/* Current Override Status Banner */
+.current-override-status {
+  background: var(--bg-primary);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--bg-panel);
+}
+
+.override-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.override-target-ball {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--bg-panel);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--text-primary);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+}
+
+.btn-reset-override {
+  background: var(--bg-panel);
+  border: none;
+  color: var(--text-primary);
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-reset-override:hover {
+  background: var(--accent-red-dark);
+}
+
+/* ─── Pool Summary ─── */
+.pool-breakdown-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.pool-box {
+  background: var(--bg-primary);
+  border-radius: 10px;
+  padding: 10px 14px;
+  border-left: 4px solid var(--bg-panel);
+}
+
+.pool-box.green  { border-left-color: var(--game-green); }
+.pool-box.violet { border-left-color: var(--game-violet); }
+.pool-box.red    { border-left-color: var(--accent-red); }
+.pool-box.big    { border-left-color: var(--game-big); }
+.pool-box.small  { border-left-color: var(--game-small); }
+
+.pool-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.pool-amount {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--text-primary);
+  margin-top: 2px;
+}
+
+/* ─── Bets Table ─── */
+.bets-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.bets-table th {
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  text-align: left;
+  padding: 10px;
+  font-weight: 800;
+}
+
+.bets-table td {
+  padding: 10px;
+  border-bottom: 1px solid var(--bg-panel);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* ─── Wallet Manager ─── */
+.wallet-mgr-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-wallet-action {
+  background: var(--bg-panel);
+  color: var(--text-primary);
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-wallet-action:hover {
+  background: var(--accent-red-dark);
+}
+
+/* ─── Admin Toast ─── */
+.admin-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--accent-red);
+  color: var(--text-primary);
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-weight: 800;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: 999;
+}
+
+.admin-toast.show { opacity: 1; }
+
+@media (max-width: 640px) {
+  .balls-grid-admin {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  .game-selector-bar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
