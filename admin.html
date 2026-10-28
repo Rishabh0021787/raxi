@@ -14,7 +14,7 @@
   <!-- ======================================================== -->
   <!-- 0. RAXI WIN ANIMATED SPLASH / BUFFERING LOADER           -->
   <!-- ======================================================== -->
-  <div id="raxiSplashLoader" class="raxi-splash-loader">
+  <div id="raxiSplashLoader" class="raxi-splash-loader" onclick="dismissSplash()">
     <div class="raxi-spinner-wrap">
       <div class="raxi-orbit-ring"></div>
       <div class="raxi-orbit-ring raxi-ring-2"></div>
@@ -961,16 +961,21 @@
   <!-- Scripts -->
   <script src="admin.js"></script>
   <script>
-    // RAXI WIN Splash Loader — hide after page loads
-    window.addEventListener('load', function () {
+    // RAXI WIN Splash Loader — auto dismiss fast & fail-safe
+    function dismissSplash() {
       const splash = document.getElementById('raxiSplashLoader');
-      if (splash) {
-        setTimeout(function () {
-          splash.classList.add('raxi-splash-hide');
-          setTimeout(function () { splash.style.display = 'none'; }, 600);
-        }, 1800);
+      if (splash && splash.style.display !== 'none') {
+        splash.classList.add('raxi-splash-hide');
+        setTimeout(function () { splash.style.display = 'none'; }, 300);
       }
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+      setTimeout(dismissSplash, 500);
     });
+    window.addEventListener('load', function () {
+      setTimeout(dismissSplash, 200);
+    });
+    setTimeout(dismissSplash, 1000); // Safety guarantee
   </script>
 </body>
 </html>
