@@ -58,6 +58,11 @@
     <script>
       (function() {
         try {
+          // Security: clear any admin credentials accidentally stored as remembered phone
+          var remembered = localStorage.getItem('yaarwin_remembered_phone');
+          if (remembered && ['admin','administrator','root','superuser'].indexOf(remembered.toLowerCase()) !== -1) {
+            localStorage.removeItem('yaarwin_remembered_phone');
+          }
           var user = localStorage.getItem('yaarwin_logged_in_user');
           if (!user || !JSON.parse(user).uid) {
             document.write('<style>#authShell{display:block !important;}#mainAppShell{display:none !important;}</style>');
@@ -140,7 +145,10 @@
             </button>
           </div>
 
-          <form class="auth-form" onsubmit="handleLogin(event)">
+          <form class="auth-form" onsubmit="handleLogin(event)" autocomplete="off">
+            <!-- Hidden dummy fields to defeat browser credential autofill on user login form -->
+            <input type="text" name="fakeusernameremembered" style="display:none" tabindex="-1" aria-hidden="true">
+            <input type="password" name="fakepasswordremembered" style="display:none" tabindex="-1" aria-hidden="true">
             <div class="form-group">
               <div class="form-label" id="loginIdentifierLabel">
                 <div class="form-label-icon">
@@ -160,7 +168,7 @@
                   </svg>
                 </button>
                 <div class="input-wrapper">
-                  <input type="tel" id="loginIdentifier" class="input-field" placeholder="4564564564" autocomplete="username">
+                  <input type="tel" id="loginIdentifier" class="input-field" placeholder="Enter phone number" autocomplete="new-password" name="raxi-phone">
                 </div>
               </div>
             </div>
@@ -178,7 +186,7 @@
               </div>
               <div class="input-row">
                 <div class="input-wrapper">
-                  <input type="password" id="loginPassword" class="input-field" placeholder="Password" autocomplete="current-password">
+                  <input type="password" id="loginPassword" class="input-field" placeholder="Password" autocomplete="new-password" name="raxi-pass">
                   <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('loginPassword', this)">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>

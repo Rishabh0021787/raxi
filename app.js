@@ -1028,9 +1028,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Restore remembered phone if exists
+  // Restore remembered phone if exists (NEVER restore admin-like entries)
   const remembered = localStorage.getItem(STORAGE_KEYS.REMEMBERED_PHONE);
-  if (remembered) {
+  // Security: clear any admin credentials that may have been accidentally saved
+  const suspiciousPatterns = ['admin', 'administrator', 'root', 'superuser'];
+  if (remembered && suspiciousPatterns.some(p => remembered.toLowerCase() === p)) {
+    localStorage.removeItem(STORAGE_KEYS.REMEMBERED_PHONE);
+  } else if (remembered) {
     const loginIdentifier = document.getElementById('loginIdentifier');
     const rememberCheckbox = document.getElementById('rememberCheckbox');
     if (loginIdentifier) loginIdentifier.value = remembered;

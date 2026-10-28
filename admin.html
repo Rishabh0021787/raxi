@@ -34,12 +34,15 @@
         <p class="login-subtitle">ADMIN PANEL & MASTER CONTROL</p>
       </div>
 
-      <form class="login-form" onsubmit="handleAdminLogin(event)">
+      <form class="login-form" onsubmit="handleAdminLogin(event)" autocomplete="off">
+        <!-- Hidden honeypot fields to defeat browser autofill on admin panel -->
+        <input type="text" name="fakeadminuser" style="display:none" tabindex="-1" aria-hidden="true">
+        <input type="password" name="fakeadminpass" style="display:none" tabindex="-1" aria-hidden="true">
         <div class="form-group">
           <label>Admin Username</label>
           <div class="input-wrap">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <input type="text" id="adminUserInput" placeholder="Enter username" value="admin" required autocomplete="username">
+            <input type="text" id="adminUserInput" placeholder="Enter admin username" required autocomplete="off" name="admin-uid-x">
           </div>
         </div>
 
@@ -47,7 +50,7 @@
           <label>Security Password / PIN</label>
           <div class="input-wrap">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            <input type="password" id="adminPassInput" placeholder="Enter password" value="admin123" required autocomplete="current-password">
+            <input type="password" id="adminPassInput" placeholder="Enter admin password" required autocomplete="new-password" name="admin-sec-x">
           </div>
         </div>
 
@@ -57,7 +60,7 @@
         </button>
 
         <div class="login-footer-hints">
-          <span>Default Credentials: <code>admin</code> / <code>admin123</code></span>
+          <span>Secure Admin Access — RAXI.WIN Control Panel</span>
         </div>
       </form>
     </div>
