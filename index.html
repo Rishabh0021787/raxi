@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -2776,7 +2776,7 @@
           <div style="background: #3E1919; border: 1px solid rgba(250,72,76,0.25); border-radius: 14px; padding: 16px; margin-bottom: 16px;">
             <div style="font-size: 12px; color: #D09B9B; font-weight: 600; text-transform: uppercase; margin-bottom: 8px;">Exclusive Invitation Link</div>
             <div style="background: #2C0001; border: 1px solid rgba(250,72,76,0.3); border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; word-break: break-all;">
-              <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #fff; line-height: 1.4;" id="promoInviteLinkDisplay">https://www.raxiwin5.wuaze.com/#/register?invitationCode=26332109830</span>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #fff; line-height: 1.4;" id="promoInviteLinkDisplay">https://raxiwin5.wuaze.com/#/register?invitationCode=26332109830</span>
             </div>
             <button type="button" class="deposit-pay-btn" onclick="copyFullInviteLink()" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
@@ -3473,6 +3473,11 @@
         if (el) el.style.display = (s === screen) ? 'block' : 'none';
       });
       window.location.hash = screen;
+      try {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'RAXI_URL_CHANGE', hash: '#' + screen }, '*');
+        }
+      } catch(e) {}
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -3523,6 +3528,11 @@
         });
 
         window.location.hash = tabName;
+        try {
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage({ type: 'RAXI_URL_CHANGE', hash: '#' + tabName }, '*');
+          }
+        } catch(e) {}
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
         if (tabName === 'home') {
@@ -4599,10 +4609,7 @@
 
     function getFullInviteLink() {
       const code = getUserInviteCode();
-      const origin = (window.location.origin && window.location.origin !== 'null' && !window.location.origin.startsWith('file'))
-        ? window.location.origin
-        : 'https://www.raxiwin5.wuaze.com';
-      return `${origin}/#/register?invitationCode=${code}`;
+      return `https://raxiwin5.wuaze.com/#/register?invitationCode=${code}`;
     }
 
     function updatePromotionViewUI() {

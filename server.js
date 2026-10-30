@@ -1,4 +1,4 @@
-﻿import http from 'http';
+import http from 'http';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -1558,7 +1558,8 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(200, {
         'Content-Type': contentType,
         'Cache-Control': 'no-cache',
-        'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': '*',
+        'Content-Security-Policy': "frame-ancestors *;"
       });
       res.end(content);
     }
