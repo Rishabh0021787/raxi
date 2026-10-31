@@ -4030,16 +4030,19 @@
         }
 
         container.innerHTML = list.map(dep => {
+          const isBonus = dep.type === 'Registration Bonus' || (dep.orderId && dep.orderId.startsWith('BONUS-'));
           const isPending = dep.status === 'Pending';
           const isApproved = dep.status === 'Approved';
           const statusClass = isApproved ? 'history-deposit-badge' : (isPending ? 'history-status-pending' : 'history-status-failed');
-          const statusText = isApproved ? 'Approved' : (isPending ? 'Pending Review' : 'Rejected');
+          const statusText = isBonus ? 'Claimed' : (isApproved ? 'Approved' : (isPending ? 'Pending Review' : 'Rejected'));
+          const badgeText = isBonus ? '🎁 Bonus' : 'Deposit';
+          const badgeStyle = isBonus ? 'background: linear-gradient(135deg, #FFB300, #F57C00); color: #fff; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;' : '';
 
           return `
             <div class="history-deposit-card">
               <div class="history-card-top">
-                <span class="history-deposit-badge">Deposit</span>
-                <span class="${statusClass}" style="${isPending ? 'color: #ff9800; font-weight:700;' : (isApproved ? 'color:#00c853; font-weight:700;' : '')}">${statusText}</span>
+                <span class="history-deposit-badge" style="${badgeStyle}">${badgeText}</span>
+                <span class="${statusClass}" style="${isBonus ? 'color:#FFD700; font-weight:700;' : (isPending ? 'color: #ff9800; font-weight:700;' : (isApproved ? 'color:#00c853; font-weight:700;' : ''))}">${statusText}</span>
               </div>
               <div class="history-card-row">
                 <span class="history-card-label">Order amount</span>
@@ -4050,8 +4053,8 @@
                 <span class="history-card-value">${dep.type || 'Phonepe_QR'}</span>
               </div>
               <div class="history-card-row">
-                <span class="history-card-label">UTR Number</span>
-                <span class="history-card-value">${dep.utr || 'N/A'}</span>
+                <span class="history-card-label">${isBonus ? 'Reward Source' : 'UTR Number'}</span>
+                <span class="history-card-value">${isBonus ? 'New User Welcome Gift' : (dep.utr || 'N/A')}</span>
               </div>
               <div class="history-card-row">
                 <span class="history-card-label">Time</span>
