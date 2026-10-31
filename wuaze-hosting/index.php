@@ -1,9 +1,7 @@
 <?php
-// =======================================================================
-// RAXI.WIN - Main Domain Host (Masked Viewport)
-// Domain: https://raxiwin5.wuaze.com/
-// Keeps user on https://raxiwin5.wuaze.com without redirecting to Render
-// =======================================================================
+// RAXI.WIN — Masked Viewport for raxiwin5.wuaze.com
+// Keeps user on raxiwin5.wuaze.com, shows RAXI brand loading screen
+// while Render wakes up. User NEVER sees Render's "Service Waking Up" page.
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -15,118 +13,133 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
   <link rel="icon" type="image/png" href="https://raxi-win.onrender.com/logo.png">
-  <title>RAXI.WIN - #1 Premium Entertainment &amp; Gaming Platform</title>
+  <title>RAXI.WIN - #1 Premium Gaming Platform</title>
 
   <style>
     *, *::before, *::after {
-      margin: 0;
-      padding: 0;
+      margin: 0; padding: 0;
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
     }
-
     html, body {
-      width: 100%;
-      height: 100%;
+      width: 100%; height: 100%;
       overflow: hidden;
-      background-color: #2C0001;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #150000;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
+    /* ─── Full-screen iframe (hidden until server is ready) ─── */
     #appFrame {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      height: 100dvh;
-      border: none;
-      outline: none;
-      display: block;
+      top: 0; left: 0;
+      width: 100%; height: 100%; height: 100dvh;
+      border: none; outline: none;
+      display: none;               /* hidden until READY */
       z-index: 10;
-      background-color: #2C0001;
+      background: #2C0001;
+    }
+    #appFrame.ready {
+      display: block;
     }
 
-    #loadingScreen {
+    /* ─── Branded loading overlay ─── */
+    #loader {
       position: fixed;
       inset: 0;
-      background: radial-gradient(circle at center, #552122 0%, #2C0001 70%, #150000 100%);
+      background: radial-gradient(ellipse at 50% 40%, #552122 0%, #2C0001 55%, #150000 100%);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 0;
       z-index: 9999;
-      transition: opacity 0.4s ease, visibility 0.4s ease;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
     }
-
-    #loadingScreen.hidden {
+    #loader.hidden {
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
     }
 
-    .loader-brand {
+    /* logo */
+    .ld-logo-wrap {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 24px;
+      gap: 14px;
+      margin-bottom: 28px;
     }
-
-    .loader-logo-img {
-      width: 50px;
-      height: 50px;
+    .ld-logo-img {
+      width: 54px; height: 54px;
       object-fit: contain;
-      filter: drop-shadow(0 4px 14px rgba(250,72,76,0.6));
+      filter: drop-shadow(0 4px 18px rgba(250,72,76,0.7));
+      animation: pulse 2s infinite ease-in-out;
     }
-
-    .loader-title {
-      font-size: 32px;
+    @keyframes pulse {
+      0%, 100% { transform: scale(1);   filter: drop-shadow(0 4px 18px rgba(250,72,76,0.7)); }
+      50%       { transform: scale(1.06);filter: drop-shadow(0 6px 24px rgba(250,72,76,1));   }
+    }
+    .ld-brand {
+      font-size: 36px;
       font-weight: 900;
-      letter-spacing: 1.5px;
+      letter-spacing: 2px;
       color: #fff;
       text-transform: uppercase;
     }
+    .ld-brand span { color: #FA484C; }
 
-    .loader-title span {
-      color: #FA484C;
-    }
-
-    .spinner-ring {
-      width: 44px;
-      height: 44px;
-      border: 3.5px solid rgba(250, 72, 76, 0.2);
-      border-top-color: #FA484C;
+    /* spinner */
+    .ld-spinner {
+      width: 48px; height: 48px;
+      border: 4px solid rgba(250,72,76,0.15);
+      border-top-color:  #FA484C;
       border-right-color: #F5E5A0;
       border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+      animation: spin 0.85s linear infinite;
+      margin-bottom: 18px;
     }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    .loader-text {
-      margin-top: 14px;
-      font-size: 13px;
+    /* status text */
+    .ld-status {
+      font-size: 13.5px;
       font-weight: 600;
       color: #D09B9B;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.4px;
+      transition: opacity 0.3s;
+    }
+    .ld-dots::after {
+      content: '';
+      animation: dots 1.6s steps(4, end) infinite;
+    }
+    @keyframes dots {
+      0%  { content: '';    }
+      25% { content: '.';   }
+      50% { content: '..';  }
+      75% { content: '...'; }
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    /* sub-hint */
+    .ld-hint {
+      margin-top: 10px;
+      font-size: 11.5px;
+      color: rgba(255,255,255,0.25);
     }
   </style>
 </head>
 <body>
 
-  <!-- Instant Branded Loading Screen -->
-  <div id="loadingScreen">
-    <div class="loader-brand">
-      <img src="https://raxi-win.onrender.com/logo.png" alt="RAXI" class="loader-logo-img" onerror="this.style.display='none'">
-      <div class="loader-title">RAXI<span>.WIN</span></div>
+  <!-- ── RAXI Branded Loading Screen ── -->
+  <div id="loader">
+    <div class="ld-logo-wrap">
+      <img src="https://raxi-win.onrender.com/logo.png" alt="" class="ld-logo-img" onerror="this.style.display='none'">
+      <div class="ld-brand">RAXI<span>.WIN</span></div>
     </div>
-    <div class="spinner-ring"></div>
-    <div class="loader-text">Loading platform...</div>
+    <div class="ld-spinner"></div>
+    <div class="ld-status" id="ldStatus">Starting platform<span class="ld-dots"></span></div>
+    <div class="ld-hint" id="ldHint">Please wait a moment</div>
   </div>
 
-  <!-- Full-Screen Native-Like Viewport Iframe -->
+  <!-- ── Full-screen App Frame (loaded once server is awake) ── -->
   <iframe
     id="appFrame"
     src="about:blank"
@@ -134,58 +147,100 @@
     scrolling="yes"
     allowfullscreen
     allow="autoplay *; fullscreen *; clipboard-read *; clipboard-write *; camera *; microphone *; geolocation *"
-    loading="eager"
   ></iframe>
 
   <script>
-    (function() {
-      var BACKEND_ORIGIN = 'https://raxi-win.onrender.com';
-      var frame = document.getElementById('appFrame');
-      var loader = document.getElementById('loadingScreen');
+  (function () {
+    var BACKEND  = 'https://raxi-win.onrender.com';
+    var PING_URL = BACKEND + '/ping';        // fast /ping endpoint
 
-      // 1. Resolve sub-path, query parameters and hash from raxiwin5.wuaze.com
-      var path = window.location.pathname || '';
-      if (path === '/' || path === '/index.php' || path === '/index.html') {
-        path = '';
+    var frame    = document.getElementById('appFrame');
+    var loader   = document.getElementById('loader');
+    var ldStatus = document.getElementById('ldStatus');
+    var ldHint   = document.getElementById('ldHint');
+
+    var startedAt = Date.now();
+    var POLL_INTERVAL = 3000;   // check every 3 s
+    var MAX_WAIT      = 120000; // give up branding after 2 min
+
+    // Build the target URL preserving any invite code or hash
+    var path = window.location.pathname || '';
+    if (path === '/' || path === '/index.php' || path === '/index.html') path = '';
+    var TARGET = BACKEND + path + window.location.search + window.location.hash;
+
+    function showApp() {
+      frame.src = TARGET;
+      frame.addEventListener('load', function () {
+        setTimeout(function () {
+          loader.classList.add('hidden');
+          frame.classList.add('ready');
+        }, 400);
+      });
+      // Hard fallback — hide loader 5 s after iframe starts loading
+      setTimeout(function () {
+        loader.classList.add('hidden');
+        frame.classList.add('ready');
+      }, 6000);
+    }
+
+    function updateStatus(secs) {
+      if (secs < 15) {
+        ldStatus.innerHTML = 'Starting platform<span class="ld-dots"></span>';
+        ldHint.textContent  = 'Please wait a moment';
+      } else if (secs < 45) {
+        ldStatus.innerHTML = 'Waking up server<span class="ld-dots"></span>';
+        ldHint.textContent  = 'Takes ~30 seconds on first visit';
+      } else {
+        ldStatus.innerHTML = 'Almost ready<span class="ld-dots"></span>';
+        ldHint.textContent  = 'Hang tight — loading your game';
+      }
+    }
+
+    function poll() {
+      var elapsed = Date.now() - startedAt;
+      updateStatus(Math.floor(elapsed / 1000));
+
+      if (elapsed > MAX_WAIT) {
+        // Give up waiting and just show the iframe (will show Render's page if still booting)
+        showApp();
+        return;
       }
 
-      var fullTarget = BACKEND_ORIGIN + path + window.location.search + window.location.hash;
-      frame.src = fullTarget;
-
-      // 2. Hide loader once iframe document is ready
-      var hideLoader = function() {
-        if (!loader) return;
-        loader.classList.add('hidden');
-        setTimeout(function() {
-          loader.style.display = 'none';
-        }, 450);
-      };
-
-      frame.addEventListener('load', function() {
-        setTimeout(hideLoader, 250);
-      });
-
-      // 3. Fallback: hide loader after 5s max in case of network lag
-      setTimeout(hideLoader, 5000);
-
-      // 4. Synchronize hash changes back and forth
-      window.addEventListener('hashchange', function() {
-        try {
-          if (frame.contentWindow && frame.contentWindow.location.hash !== window.location.hash) {
-            frame.contentWindow.location.hash = window.location.hash;
+      fetch(PING_URL, { method: 'GET', cache: 'no-store', mode: 'cors' })
+        .then(function (r) {
+          if (r.ok) {
+            showApp();          // server is alive — load the app
+          } else {
+            setTimeout(poll, POLL_INTERVAL);
           }
-        } catch(e) {}
-      });
+        })
+        .catch(function () {
+          // Server not yet awake — keep polling
+          setTimeout(poll, POLL_INTERVAL);
+        });
+    }
 
-      window.addEventListener('message', function(event) {
-        if (!event || !event.data) return;
-        if (event.data.type === 'RAXI_URL_CHANGE' && event.data.hash) {
-          if (window.location.hash !== event.data.hash) {
-            history.replaceState(null, '', event.data.hash);
-          }
+    // Start polling immediately
+    poll();
+
+    // ── Hash sync (parent ↔ iframe) ──
+    window.addEventListener('hashchange', function () {
+      try {
+        if (frame.contentWindow && frame.contentWindow.location.hash !== window.location.hash) {
+          frame.contentWindow.location.hash = window.location.hash;
         }
-      });
-    })();
+      } catch (e) {}
+    });
+
+    window.addEventListener('message', function (ev) {
+      if (!ev || !ev.data) return;
+      if (ev.data.type === 'RAXI_URL_CHANGE' && ev.data.hash) {
+        if (window.location.hash !== ev.data.hash) {
+          history.replaceState(null, '', ev.data.hash);
+        }
+      }
+    });
+  })();
   </script>
 
 </body>

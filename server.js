@@ -539,6 +539,13 @@ const server = http.createServer(async (req, res) => {
   const params = new URLSearchParams(queryString || '');
 
   // ==========================================
+  // HEALTH / KEEP-ALIVE PING ENDPOINT
+  // ==========================================
+  if ((urlPath === '/ping' || urlPath === '/health') && req.method === 'GET') {
+    return sendJSON(res, 200, { ok: true, ts: Date.now(), status: 'alive' });
+  }
+
+  // ==========================================
   // PUBLIC PLATFORM CONFIG
   // ==========================================
   if (urlPath === '/api/config' && req.method === 'GET') {
