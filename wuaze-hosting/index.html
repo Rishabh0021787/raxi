@@ -22,17 +22,22 @@
       background: #150000;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
+
+    /* ─── Full-screen iframe (hidden until server is ready) ─── */
     #appFrame {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%; height: 100dvh;
       border: none; outline: none;
-      display: none;
+      display: none;               /* hidden until READY */
       z-index: 10;
       background: #2C0001;
     }
-    #appFrame.ready { display: block; }
+    #appFrame.ready {
+      display: block;
+    }
 
+    /* ─── Branded loading overlay ─── */
     #loader {
       position: fixed;
       inset: 0;
@@ -41,39 +46,62 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 0;
       z-index: 9999;
       transition: opacity 0.5s ease, visibility 0.5s ease;
     }
     #loader.hidden {
-      opacity: 0; visibility: hidden; pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
     }
+
+    /* logo */
     .ld-logo-wrap {
-      display: flex; align-items: center; gap: 14px; margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 28px;
     }
     .ld-logo-img {
-      width: 54px; height: 54px; object-fit: contain;
+      width: 54px; height: 54px;
+      object-fit: contain;
       filter: drop-shadow(0 4px 18px rgba(250,72,76,0.7));
       animation: pulse 2s infinite ease-in-out;
     }
     @keyframes pulse {
-      0%,100% { transform: scale(1);    filter: drop-shadow(0 4px 18px rgba(250,72,76,0.7)); }
-      50%      { transform: scale(1.06); filter: drop-shadow(0 6px 24px rgba(250,72,76,1));   }
+      0%, 100% { transform: scale(1);   filter: drop-shadow(0 4px 18px rgba(250,72,76,0.7)); }
+      50%       { transform: scale(1.06);filter: drop-shadow(0 6px 24px rgba(250,72,76,1));   }
     }
     .ld-brand {
-      font-size: 36px; font-weight: 900; letter-spacing: 2px;
-      color: #fff; text-transform: uppercase;
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #fff;
+      text-transform: uppercase;
     }
     .ld-brand span { color: #FA484C; }
+
+    /* spinner */
     .ld-spinner {
       width: 48px; height: 48px;
       border: 4px solid rgba(250,72,76,0.15);
-      border-top-color: #FA484C; border-right-color: #F5E5A0;
+      border-top-color:  #FA484C;
+      border-right-color: #F5E5A0;
       border-radius: 50%;
       animation: spin 0.85s linear infinite;
       margin-bottom: 18px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .ld-status { font-size: 13.5px; font-weight: 600; color: #D09B9B; letter-spacing: 0.4px; }
+
+    /* status text */
+    .ld-status {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #D09B9B;
+      letter-spacing: 0.4px;
+      transition: opacity 0.3s;
+    }
     .ld-dots::after {
       content: '';
       animation: dots 1.6s steps(4, end) infinite;
@@ -84,10 +112,18 @@
       50% { content: '..';  }
       75% { content: '...'; }
     }
-    .ld-hint { margin-top: 10px; font-size: 11.5px; color: rgba(255,255,255,0.25); }
+
+    /* sub-hint */
+    .ld-hint {
+      margin-top: 10px;
+      font-size: 11.5px;
+      color: rgba(255,255,255,0.25);
+    }
   </style>
 </head>
 <body>
+
+  <!-- ── RAXI Branded Loading Screen ── -->
   <div id="loader">
     <div class="ld-logo-wrap">
       <img src="https://raxi-win.onrender.com/logo.png" alt="" class="ld-logo-img" onerror="this.style.display='none'">
@@ -98,26 +134,38 @@
     <div class="ld-hint" id="ldHint">Please wait a moment</div>
   </div>
 
-  <iframe id="appFrame" src="about:blank" frameborder="0" scrolling="yes" allowfullscreen
-    allow="autoplay *; fullscreen *; clipboard-read *; clipboard-write *; camera *; microphone *; geolocation *"></iframe>
+  <!-- ── Full-screen App Frame (loaded once server is awake) ── -->
+  <iframe
+    id="appFrame"
+    src="about:blank"
+    frameborder="0"
+    scrolling="yes"
+    allowfullscreen
+    allow="autoplay *; fullscreen *; clipboard-read *; clipboard-write *; camera *; microphone *; geolocation *"
+  ></iframe>
 
   <script>
   (function () {
     var BACKEND  = 'https://raxi-win.onrender.com';
-    var PING_URL = BACKEND + '/ping';
+    var PING_URL = BACKEND + '/ping';        // fast /ping endpoint
+
     var frame    = document.getElementById('appFrame');
     var loader   = document.getElementById('loader');
     var ldStatus = document.getElementById('ldStatus');
     var ldHint   = document.getElementById('ldHint');
-    var startedAt = Date.now();
-    var POLL_INTERVAL = 3000;
-    var MAX_WAIT = 120000;
 
+    var startedAt = Date.now();
+    var POLL_INTERVAL = 3000;   // check every 3 s
+    var MAX_WAIT      = 120000; // give up branding after 2 min
+
+    // Build the target URL preserving any invite code or hash
     var path = window.location.pathname || '';
     if (path === '/' || path === '/index.php' || path === '/index.html') path = '';
     var TARGET = BACKEND + path + window.location.search + window.location.hash;
 
     function showApp() {
+      if (frame.getAttribute('data-loaded') === 'true') return;
+      frame.setAttribute('data-loaded', 'true');
       frame.src = TARGET;
       frame.addEventListener('load', function () {
         setTimeout(function () {
@@ -125,39 +173,63 @@
           frame.classList.add('ready');
         }, 400);
       });
+      // Hard fallback — hide loader 8 s after iframe starts loading
       setTimeout(function () {
         loader.classList.add('hidden');
         frame.classList.add('ready');
-      }, 6000);
+      }, 8000);
     }
 
     function updateStatus(secs) {
       if (secs < 15) {
         ldStatus.innerHTML = 'Starting platform<span class="ld-dots"></span>';
-        ldHint.textContent = 'Please wait a moment';
+        ldHint.textContent  = 'Please wait a moment';
       } else if (secs < 45) {
         ldStatus.innerHTML = 'Waking up server<span class="ld-dots"></span>';
-        ldHint.textContent = 'Takes ~30 seconds on first visit';
+        ldHint.textContent  = 'Takes ~30 seconds on first visit';
       } else {
         ldStatus.innerHTML = 'Almost ready<span class="ld-dots"></span>';
-        ldHint.textContent = 'Hang tight — loading your game';
+        ldHint.textContent  = 'Hang tight — loading your game';
       }
     }
 
     function poll() {
       var elapsed = Date.now() - startedAt;
       updateStatus(Math.floor(elapsed / 1000));
-      if (elapsed > MAX_WAIT) { showApp(); return; }
+
+      if (elapsed > MAX_WAIT) {
+        // Give up waiting and just show the iframe (will show Render's page if still booting)
+        showApp();
+        return;
+      }
+
       fetch(PING_URL, { method: 'GET', cache: 'no-store', mode: 'cors' })
         .then(function (r) {
-          if (r.ok) { showApp(); }
-          else { setTimeout(poll, POLL_INTERVAL); }
+          if (!r.ok) throw new Error('status ' + r.status);
+          var ct = r.headers.get('content-type') || '';
+          if (ct.indexOf('application/json') === -1) {
+            // Render returned HTML wakeup page (not our JSON API yet)
+            throw new Error('Not JSON yet');
+          }
+          return r.json();
         })
-        .catch(function () { setTimeout(poll, POLL_INTERVAL); });
+        .then(function (data) {
+          if (data && data.ok === true) {
+            showApp();          // server is 100% alive & returned JSON — load the app
+          } else {
+            setTimeout(poll, POLL_INTERVAL);
+          }
+        })
+        .catch(function () {
+          // Server still waking up / allocating resources — keep showing RAXI brand loading
+          setTimeout(poll, POLL_INTERVAL);
+        });
     }
 
+    // Start polling immediately
     poll();
 
+    // ── Hash sync (parent ↔ iframe) ──
     window.addEventListener('hashchange', function () {
       try {
         if (frame.contentWindow && frame.contentWindow.location.hash !== window.location.hash) {
@@ -169,10 +241,13 @@
     window.addEventListener('message', function (ev) {
       if (!ev || !ev.data) return;
       if (ev.data.type === 'RAXI_URL_CHANGE' && ev.data.hash) {
-        if (window.location.hash !== ev.data.hash) history.replaceState(null, '', ev.data.hash);
+        if (window.location.hash !== ev.data.hash) {
+          history.replaceState(null, '', ev.data.hash);
+        }
       }
     });
   })();
   </script>
+
 </body>
 </html>

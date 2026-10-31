@@ -169,6 +169,8 @@
     var TARGET = BACKEND + path + window.location.search + window.location.hash;
 
     function showApp() {
+      if (frame.getAttribute('data-loaded') === 'true') return;
+      frame.setAttribute('data-loaded', 'true');
       frame.src = TARGET;
       frame.addEventListener('load', function () {
         setTimeout(function () {
@@ -176,11 +178,11 @@
           frame.classList.add('ready');
         }, 400);
       });
-      // Hard fallback — hide loader 5 s after iframe starts loading
+      // Hard fallback — hide loader 8 s after iframe starts loading
       setTimeout(function () {
         loader.classList.add('hidden');
         frame.classList.add('ready');
-      }, 6000);
+      }, 8000);
     }
 
     function updateStatus(secs) {
@@ -208,14 +210,23 @@
 
       fetch(PING_URL, { method: 'GET', cache: 'no-store', mode: 'cors' })
         .then(function (r) {
-          if (r.ok) {
-            showApp();          // server is alive — load the app
+          if (!r.ok) throw new Error('status ' + r.status);
+          var ct = r.headers.get('content-type') || '';
+          if (ct.indexOf('application/json') === -1) {
+            // Render returned HTML wakeup page (not our JSON API yet)
+            throw new Error('Not JSON yet');
+          }
+          return r.json();
+        })
+        .then(function (data) {
+          if (data && data.ok === true) {
+            showApp();          // server is 100% alive & returned JSON — load the app
           } else {
             setTimeout(poll, POLL_INTERVAL);
           }
         })
         .catch(function () {
-          // Server not yet awake — keep polling
+          // Server still waking up / allocating resources — keep showing RAXI brand loading
           setTimeout(poll, POLL_INTERVAL);
         });
     }
