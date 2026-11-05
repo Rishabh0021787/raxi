@@ -524,6 +524,128 @@ function sendJSON(res, status, data) {
   res.end(JSON.stringify(data));
 }
 
+// ============================================================
+// MASTER SHUTDOWN TOGGLE
+// Set to true to shut down the website, false to turn it back on.
+// ============================================================
+const IS_SHUTDOWN = true;
+
+const OFFLINE_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#2C0001">
+  <link rel="icon" type="image/png" href="/logo.png">
+  <title>RAXI.WIN - Temporarily Offline</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: radial-gradient(ellipse at 50% 35%, #4a0d10 0%, #200002 60%, #0d0001 100%);
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(250, 72, 76, 0.28);
+      border-radius: 24px;
+      padding: 44px 30px;
+      max-width: 460px;
+      width: 100%;
+      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(12px);
+    }
+    .logo {
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #fff;
+      margin-bottom: 24px;
+    }
+    .logo span { color: #FA484C; }
+    .icon {
+      font-size: 54px;
+      margin-bottom: 18px;
+      display: block;
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    h1 {
+      font-size: 23px;
+      font-weight: 800;
+      color: #F5E5A0;
+      margin-bottom: 14px;
+      letter-spacing: 0.3px;
+    }
+    p {
+      font-size: 14.5px;
+      line-height: 1.6;
+      color: #E2BCBC;
+      margin-bottom: 26px;
+    }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(250, 72, 76, 0.16);
+      color: #FA484C;
+      border: 1px solid rgba(250, 72, 76, 0.4);
+      padding: 8px 18px;
+      border-radius: 50px;
+      font-size: 12.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+    }
+    .pulse-dot {
+      width: 9px;
+      height: 9px;
+      background: #FA484C;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #FA484C;
+      animation: blink 1.5s infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+    .security-note {
+      margin-top: 26px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.45);
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">RAXI<span>.WIN</span></div>
+    <span class="icon">🛑</span>
+    <h1>Website Temporarily Closed</h1>
+    <p>Our platform is temporarily closed for maintenance and updates. All games, deposits, and player services are paused.</p>
+    <div class="status-badge">
+      <span class="pulse-dot"></span>
+      System Offline
+    </div>
+    <div class="security-note">
+      🔒 All player balances, accounts, and history remain 100% safe and secure. We will be back online soon!
+    </div>
+  </div>
+</body>
+</html>`;
+
 const server = http.createServer(async (req, res) => {
   // CORS Preflight
   if (req.method === 'OPTIONS') {
@@ -537,6 +659,38 @@ const server = http.createServer(async (req, res) => {
 
   const [urlPath, queryString] = req.url.split('?');
   const params = new URLSearchParams(queryString || '');
+
+  // ------------------------------------------------------------
+  // SHUTDOWN INTERCEPTOR: Intercept all requests if site is offline
+  // ------------------------------------------------------------
+  if (IS_SHUTDOWN) {
+    if ((urlPath === '/ping' || urlPath === '/health') && req.method === 'GET') {
+      return sendJSON(res, 200, { ok: true, ts: Date.now(), status: 'offline', maintenance: true });
+    }
+    if (urlPath === '/logo.png' || urlPath === '/favicon.ico' || urlPath === '/assets/logo.png') {
+      const staticFile = path.join(__dirname, urlPath);
+      if (fs.existsSync(staticFile)) {
+        res.writeHead(200, {
+          'Content-Type': 'image/png',
+          'Access-Control-Allow-Origin': '*',
+          'Content-Security-Policy': 'frame-ancestors *;'
+        });
+        return res.end(fs.readFileSync(staticFile));
+      }
+    }
+    if (urlPath.startsWith('/api/')) {
+      return sendJSON(res, 503, {
+        success: false,
+        error: 'RAXI.WIN is temporarily offline for maintenance. Please check back later.'
+      });
+    }
+    res.writeHead(503, {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Content-Security-Policy': 'frame-ancestors *;',
+      'Access-Control-Allow-Origin': '*'
+    });
+    return res.end(OFFLINE_HTML);
+  }
 
   // ==========================================
   // HEALTH / KEEP-ALIVE PING ENDPOINT
@@ -1577,6 +1731,10 @@ const server = http.createServer(async (req, res) => {
 const wss = new WebSocketServer({ server });
 
 wss.on('connection', (ws) => {
+  if (IS_SHUTDOWN) {
+    ws.close(1000, 'Server offline for scheduled maintenance');
+    return;
+  }
   // Start with anonymous init; uid resolved after IDENTIFY message
   let wsUid = '951603';
 
