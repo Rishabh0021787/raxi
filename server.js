@@ -528,7 +528,7 @@ function sendJSON(res, status, data) {
 // MASTER SHUTDOWN TOGGLE
 // Set to true to shut down the website, false to turn it back on.
 // ============================================================
-const IS_SHUTDOWN = true;
+const IS_SHUTDOWN = false;
 
 const OFFLINE_HTML = `<!DOCTYPE html>
 <html lang="en">
